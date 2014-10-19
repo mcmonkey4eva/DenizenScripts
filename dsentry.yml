@@ -22,21 +22,6 @@
 # # The dSentry is now a complete and working bowguard, targetting monsters by default
 # # Feel free to adjust the targets to your liking, or any other setting you desire.
 #
-# TODO:
-# Make arrow knockback based on held bow ARROW_KNOCKBACK level
-# Handle health amounts / healing (including invincible)
-# Mounted dSentries?
-# Handle respawning (use Health trait respawn stuff?) (location, time...)
-# handle drops-on-death
-# Make retaliate optional
-# target: scoreboard groups?
-# target: 'monster' (auto all-bad-mobs)
-# target: 'peaceful' (auto all-good-mobs)
-# An ignore list
-# Guard mode (follow player + defend)
-# Target: NPC by name
-# Target: NPC By assignment script
-# Target: player by name
 #
 # ---------------------------- END HEADER ----------------------------
 
