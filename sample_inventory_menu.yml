@@ -25,17 +25,21 @@ sim_handler_command:
     name: sampleinvmenu
     description: Opens a sample inventory-menu.
     usage: /sampleinvmenu
+    # Only show help if the player has the permission node
     allowed help:
     - determine <player.has_permission[denizen.sampleinvmenu]>
     script:
+    # No servers
     - if <context.server> {
       - narrate "<&c>This is a player-only command."
       - queue clear
       }
+    # Need permission
     - if !<player.has_permission[denizen.sampleinvmenu]> {
       - narrate "<&c>You lack the permission for this command."
       - queue clear
       }
+    # Show the inventory to the linked player
     - inventory open d:in@sim_inventory
 
 # The world event based handler
@@ -43,15 +47,21 @@ sim_handler_world:
     type: world
     events:
         on player clicks sim_god_item in inventory:
+        # Confirm permission node
         - if !<player.has_permission[denizen.sampleinvmenu.god]> {
           - narrate "<&c>You lack the permission for this menu item."
           - queue clear
           }
         - narrate "<&2>At this point, you'd receive god!"
+        # Prevent the click
         - determine cancelled
         on player clicks sim_potato_item in inventory:
+        # Player already has the inventory open, so they have all permissions needed already.
         - narrate "<&2>Here's a potato."
+        # Prevent the click
         - determine passively cancelled
+        # Editing inventories in an inventory event is bad...
+        # Wait a tick before giving the potato to be safe.
         - wait 1t
         - give potato
 
@@ -60,14 +70,18 @@ sim_handler_world:
 sim_inventory:
     type: inventory
     inventory: chest
+    # Shows at the top of the inventory
     title: <&b><&l>Sample Inventory Menu
     size: 27
     slots:
+    # Place both items in the top and middle center.
+    # Fill the [] with your other inventory-menu items.
     - "[] [] [] [] [sim_god_item] [] [] [] []"
     - "[] [] [] [] [sim_potato_item] [] [] [] []"
     - "[] [] [] [] [] [] [] [] []"
 
 # Here and below: the items for the inventory
+# Note: These items are to never be used outside the menu inventory!
 sim_god_item:
     type: item
     material: diamond_block
