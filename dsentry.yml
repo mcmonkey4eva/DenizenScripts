@@ -23,8 +23,6 @@
 # # Feel free to adjust the targets to your liking, or any other setting you desire.
 #
 # TODO:
-# Make it only burn arrows if the bow has arrow_fire
-# Burn fisticuffs enemies if held item has normal (sword) fire ench
 # Make arrow knockback based on held bow ARROW_KNOCKBACK level
 # Handle health amounts / healing (including invincible)
 # Mounted dSentries?
@@ -472,7 +470,11 @@ dsentry_task_attack:
     - ^look %loc%
     - ^if <npc.item_in_hand.material> == m@bow {
       # todo: should critical=true be enabled in some cases? (corrupts damage calc)
-      - shoot arrow[knockback=1;fire_time=1m] origin:<npc> destination:%loc% speed:50 lead:<npc.flag[dsentry.target].as_entity.velocity> script:dsentry_task_removearrow
+      - define settings knockback=1
+      - if <npc.item_in_hand.enchantments||li@> contains ARROW_FIRE {
+        - define settings %settings%;fire_time=1m
+        }
+      - shoot arrow[%settings%] origin:<npc> destination:%loc% speed:50 lead:<npc.flag[dsentry.target].as_entity.velocity> script:dsentry_task_removearrow
       }
       else if <npc.location.distance[%loc%]> > 3 {
       - walk %loc% speed:<npc.flag[dsentry.walkspeed]>
@@ -480,6 +482,11 @@ dsentry_task_attack:
       else {
       - if <npc.entity_type> == player animate <npc> animation:arm_swing
       - hurt <npc.flag[dsentry.target]> <npc.flag[dsentry.damage]>
+      - if <npc.item_in_hand> != i@air {
+        - if <npc.item_in_hand.enchantments||li@> contains FIRE_ASPECT {
+          - adjust <npc.flag[dsentry.target]> fire_time:10s
+          }
+        }
       }
 
 dsentry_task_removearrow:
