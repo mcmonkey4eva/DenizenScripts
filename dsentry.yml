@@ -7,10 +7,22 @@
 # @author mcmonkey
 # @date 2014 / 07 / 14
 # @build 1490
-# @version 6.0
+# @version 6.1
+#
+# Installation:
+# This script requires a server restart before it will begin running.
+# Alternately, you can use the command: /ex run dsentry_task_logic
+#
+# Usage:
+# Create NPCs as normal, and use the /dsentry commands to upgrade them.
+# Example NPC setup path:
+# /npc create JoeTheKiller       # Create and spawn the NPC
+# /dsentry create                # Turn it into a dSentry
+# /ex equip <npc> hand:bow       # Give the dSentry a bow
+# # The dSentry is now a complete and working bowguard, targetting monsters by default
+# # Feel free to adjust the targets to your liking, or any other setting you desire.
 #
 # TODO:
-# Mob support (don't arm_swing mobs that don't have arms!)
 # Make it only burn arrows if the bow has arrow_fire
 # Burn fisticuffs enemies if held item has normal (sword) fire ench
 # Make arrow knockback based on held bow ARROW_KNOCKBACK level
@@ -28,7 +40,8 @@
 # Target: NPC By assignment script
 # Target: player by name
 # animate bow draw (START_USE_ITEM, wait a bit, shoot, STOP_USE_ITEM)
-# TODO Note: Message RedStoner when NPC targets are added
+#
+# ---------------------------- END HEADER ----------------------------
 
 # Handles all world events for dSentry
 dsentry_world_handler:
@@ -138,10 +151,10 @@ dsentry_command_info:
     - narrate "<&6>Walk speed<&co> <&b><def[mynpc].flag[dsentry.walkspeed]>"
     - narrate "<&6>Attack rate<&co> <&b><def[mynpc].flag[dsentry.attackrate]>"
     - if <def[mynpc].flag[dsentry.flagtargets].size||0> == 0 {
-      - narrate "<&6>Targets<&co> <&b><def[mynpc].flag[dsentry.targets].formatted>"
+      - narrate "<&6>Targets<&co> <&b><def[mynpc].flag[dsentry.targets].formatted||None>"
       }
       else {
-      - narrate "<&6>Targets<&co> <&b><def[mynpc].flag[dsentry.targets].formatted><&6>, or players flagged <&b><def[mynpc].flag[dsentry.flagtargets].formatted>"
+      - narrate "<&6>Targets<&co> <&b><def[mynpc].flag[dsentry.targets].formatted||None><&6>, or players flagged <&b><def[mynpc].flag[dsentry.flagtargets].formatted||None>"
       }
 
 dsentry_command_add:
@@ -155,7 +168,7 @@ dsentry_command_add:
       - queue clear
       }
     - if <context.args.get[2].starts_with[flagged<&co>]> {
-      - if <def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]> {
+      - if <def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]||false> {
         - narrate "<&6>That flag target is already set."
         - queue clear
         }
@@ -176,7 +189,7 @@ dsentry_command_add:
       - narrate "<&6>That target doesn't look like a proper entity type."
       - queue clear
       }
-    - if <def[mynpc].flag[dsentry.targets].contains[<context.args.get[2]>]> {
+    - if <def[mynpc].flag[dsentry.targets].contains[<context.args.get[2]>]||false> {
       - narrate "<&6>That target is already set."
       - queue clear
       }
@@ -193,7 +206,7 @@ dsentry_command_remove:
       - queue clear
       }
     - if <context.args.get[2].starts_with[flagged<&co>]> {
-      - if !<def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]> {
+      - if !<def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]||false> {
         - narrate "<&6>That flag target isn't set."
         - queue clear
         }
@@ -214,7 +227,7 @@ dsentry_command_remove:
       - narrate "<&6>That target doesn't look like a proper entity type."
       - queue clear
       }
-    - if !<def[mynpc].flag[dsentry.targets].contains[<context.args.get[2]>]> {
+    - if !<def[mynpc].flag[dsentry.targets].contains[<context.args.get[2]>]||false> {
       - narrate "<&6>That target isn't set."
       - queue clear
       }
@@ -321,8 +334,8 @@ dsentry_command_save:
     - yaml write:dsentry.<context.args.get[2]>.attackrate value:<def[mynpc].flag[dsentry.attackrate]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.walkspeed value:<def[mynpc].flag[dsentry.walkspeed]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.damage value:<def[mynpc].flag[dsentry.damage]> id:dsentry_saves
-    - yaml write:dsentry.<context.args.get[2]>.targets value:<def[mynpc].flag[dsentry.targets].as_list> id:dsentry_saves
-    - yaml write:dsentry.<context.args.get[2]>.flagtargets value:<def[mynpc].flag[dsentry.flagtargets].as_list> id:dsentry_saves
+    - yaml write:dsentry.<context.args.get[2]>.targets value:<def[mynpc].flag[dsentry.targets].as_list||li@> id:dsentry_saves
+    - yaml write:dsentry.<context.args.get[2]>.flagtargets value:<def[mynpc].flag[dsentry.flagtargets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.hand value:<def[mynpc].item_in_hand> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.helmet value:<def[mynpc].equipment.helmet> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.chestplate value:<def[mynpc].equipment.chestplate> id:dsentry_saves
@@ -410,8 +423,8 @@ dsentry_task_picktarget:
     - ^foreach %entities% {
       - if %value% matches player {
         - define playrar %value%
-        - define TEMP_PLAYER_PASS <npc.flag[dsentry.targets].contains[player]>
-        - foreach <npc.flag[dsentry.flagtargets].as_list> {
+        - define TEMP_PLAYER_PASS <npc.flag[dsentry.targets].contains[player]||false>
+        - foreach <npc.flag[dsentry.flagtargets].as_list||li@> {
           - if <def[playrar].flag[%value%]||null> != null {
             - define TEMP_PLAYER_PASS true
             }
@@ -465,7 +478,7 @@ dsentry_task_attack:
       - walk %loc% speed:<npc.flag[dsentry.walkspeed]>
       }
       else {
-      - animate <npc> animation:arm_swing
+      - if <npc.entity_type> == player animate <npc> animation:arm_swing
       - hurt <npc.flag[dsentry.target]> <npc.flag[dsentry.damage]>
       }
 
