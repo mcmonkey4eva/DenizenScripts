@@ -37,7 +37,6 @@
 # Target: NPC by name
 # Target: NPC By assignment script
 # Target: player by name
-# animate bow draw (START_USE_ITEM, wait a bit, shoot, STOP_USE_ITEM)
 #
 # ---------------------------- END HEADER ----------------------------
 
@@ -464,17 +463,23 @@ dsentry_task_attack:
         - inject dsentry_task_picktarget
         }
       }
-    - ^if <npc.flag[dsentry.target]> == null queue clear
+    - ^if <npc.flag[dsentry.target]> == null {
+      - animate <npc> animation:stop_use_item
+      - queue clear
+      }
     - ^pause waypoints
     - ^define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]>
     - ^look %loc%
-    - ^if <npc.item_in_hand.material> == m@bow {
+    - ^if <npc.item_in_hand.material.name> == bow {
       # todo: should critical=true be enabled in some cases? (corrupts damage calc)
       - define settings knockback=1
       - if <npc.item_in_hand.enchantments||li@> contains ARROW_FIRE {
         - define settings %settings%;fire_time=1m
         }
+      - animate <npc> animation:stop_use_item
       - shoot arrow[%settings%] origin:<npc> destination:%loc% speed:50 lead:<npc.flag[dsentry.target].as_entity.velocity> script:dsentry_task_removearrow
+      - wait 1t
+      - animate <npc> animation:start_use_item
       }
       else if <npc.location.distance[%loc%]> > 3 {
       - walk %loc% speed:<npc.flag[dsentry.walkspeed]>
