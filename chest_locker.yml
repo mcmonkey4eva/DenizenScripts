@@ -15,7 +15,7 @@ chestlocker_settings:
     type: yaml data
     chests:
     - chest
-    - trapeed_chest
+    - trapped_chest
     no_output:
     - wood_plate
     - stone_plate
