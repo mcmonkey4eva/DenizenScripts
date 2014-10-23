@@ -66,14 +66,14 @@ dsentry_world_handler:
         - determine <context.damager.as_npc.flag[dsentry.damage]>
         on dsentry command:
         - determine passively fulfilled
-        - if !<context.server> && !<player.has_permission[dsentry.command]||false> {
-          - narrate "<&6>You do not have permission to use the dSentry command."
-          - queue clear
-          }
         - if <context.server> {
           - define mynpc <server.selected_npc>
           }
           else {
+          - if !<player.has_permission[dsentry.command]||false> {
+            - narrate "<&6>You do not have permission to use the dSentry command."
+            - queue clear
+            }
           - define mynpc <player.selected_npc>
           }
         - if %mynpc% == null && <context.args.get[1].length||0> != 0 {
@@ -84,39 +84,9 @@ dsentry_world_handler:
           - narrate "<&6>Your selected NPC is not a dSentry!"
           - queue clear
           }
-        - if <context.args.get[1].is[==].to[create]||false> {
-          - inject dsentry_command_create
-          }
-          else if <context.args.get[1].is[==].to[save]||false> {
-          - inject dsentry_command_save
-          }
-          else if <context.args.get[1].is[==].to[range]||false> {
-          - inject dsentry_command_range
-          }
-          else if <context.args.get[1].is[==].to[followrange]||false> {
-          - inject dsentry_command_followrange
-          }
-          else if <context.args.get[1].is[==].to[speed]||false> {
-          - inject dsentry_command_speed
-          }
-          else if <context.args.get[1].is[==].to[attackrate]||false> {
-          - inject dsentry_command_attackrate
-          }
-          else if <context.args.get[1].is[==].to[damage]||false> {
-          - inject dsentry_command_damage
-          }
-          else if <context.args.get[1].is[==].to[add]||false> {
-          - inject dsentry_command_add
-          }
-          else if <context.args.get[1].is[==].to[remove]||false> {
-          - inject dsentry_command_remove
-          }
-          else if <context.args.get[1].is[==].to[info]||false> {
-          - inject dsentry_command_info
-          }
-          else if <context.args.get[1].is[==].to[guard]||false> {
-          - inject dsentry_command_guard
-          }
+        - define arg1 <c.args.get[1].escaped||null>
+        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard
+        - if <def[argList].contains[%arg1%]> inject dsentry_command_%arg1%
           else {
           - narrate "<&6>/dSentry create [save-type]"
           - narrate "<&6>/dSentry save <&lt>save-type<&gt>"
