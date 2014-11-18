@@ -401,7 +401,7 @@ dsentry_task_logic:
     script:
     - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
       - if <def[value].is_spawned> {
-        - run dsentry_task_attack as:<def[value]> instantly
+        - run dsentry_task_attack npc:<def[value]> instantly
         - if <def[value].flag[dsentry.target]||null> == null {
           - resume waypoints npc:%value%
           }
