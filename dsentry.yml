@@ -418,6 +418,7 @@ dsentry_proc_picktarget:
       - if <npc.flag[dsentry.target].as_entity.is_spawned> {
         - if <npc.location.distance[<npc.flag[dsentry.target].as_entity.location>]> < <npc.flag[dsentry.range]> {
           - determine <npc.flag[dsentry.target]>
+          }
         }
       }
     - if <npc.flag[dsentry.targets].as_list||null> == null {
