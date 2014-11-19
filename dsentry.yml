@@ -27,79 +27,89 @@
 
 # Handles all world events for dSentry
 dsentry_world_handler:
-    type: world
-    debug: false
-    events:
-        on server start:
-        - if <server.has_file[dsentry_saves.yml]> {
-          - yaml load:dsentry_saves.yml id:dsentry_saves
-          }
-          else {
-          - yaml create id:dsentry_saves
-          }
-        - run dsentry_task_logic delay:10t
-        on player damaged by player:
-        - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-          - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
-            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvP
-            && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
-            - flag <def[value]> dsentry.target:<context.damager>
-            }
-          }
-        on entity damaged by player:
-        - if <context.entity> matches player queue clear
-        - if <context.entity> matches npc queue clear
-        - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-          - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
-            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvE
-            && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
-            - flag <def[value]> dsentry.target:<context.damager>
-            }
-          }
-        on npc damaged by player:
-        - if <npc.flag[dsentry.is_dsentry]> flag <context.entity> dsentry.target:<context.damager>
-        # TODO: Better way to prevent accidental damage
-        #on npc damaged by npc:
-        #- if <context.entity.as_npc.flag[dsentry.is_dsentry]||false> && <context.damager.as_npc.flag[dsentry.is_dsentry]||false> determine cancelled
-        on npc damages entity:
-        - if !<context.damager.as_npc.flag[dsentry.is_dsentry]> queue clear
-        - determine <context.damager.as_npc.flag[dsentry.damage]>
-        on dsentry command:
-        - determine passively fulfilled
-        - if <context.server> {
-          - define mynpc <server.selected_npc>
-          }
-          else {
-          - if !<player.has_permission[dsentry.command]||false> {
-            - narrate "<&6>You do not have permission to use the dSentry command."
-            - queue clear
-            }
-          - define mynpc <player.selected_npc>
-          }
-        - if %mynpc% == null && <context.args.get[1].length||0> != 0 {
-          - narrate "<&6>You do not have an NPC selected!"
-          - queue clear
-          }
-        - if !<def[mynpc].flag[dsentry.is_dsentry]> && <context.args.get[1].length||0> != 0 && !<context.args.get[1].is[==].to[create]||false> {
-          - narrate "<&6>Your selected NPC is not a dSentry!"
-          - queue clear
-          }
-        - define arg1 <c.args.get[1].escaped||null>
-        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard
-        - if <def[argList].contains[%arg1%]> inject dsentry_command_%arg1%
-          else {
-          - narrate "<&6>/dSentry create [save-type]"
-          - narrate "<&6>/dSentry save <&lt>save-type<&gt>"
-          - narrate "<&6>/dSentry range <&lt>range<&gt>"
-          - narrate "<&6>/dSentry followrange <&lt>range<&gt>"
-          - narrate "<&6>/dSentry speed <&lt>speed<&gt>"
-          - narrate "<&6>/dSentry damage <&lt>damage<&gt>"
-          - narrate "<&6>/dSentry attackrate <&lt>attackrate<&gt>"
-          - narrate "<&6>/dSentry add <&lt>target<&gt>"
-          - narrate "<&6>/dSentry remove <&lt>target<&gt>"
-          - narrate "<&6>/dSentry guard [player-name]"
-          - narrate "<&6>/dSentry info"
-          }
+  type: world
+  debug: false
+  events:
+    on server start:
+    # loads/create yml save file, and starts main logic loop
+    - if <server.has_file[dsentry_saves.yml]> {
+      - yaml load:dsentry_saves.yml id:dsentry_saves
+      }
+      else {
+      - yaml create id:dsentry_saves
+      }
+    - run dsentry_task_logic delay:10t
+    
+    # detects pvp and if listed in dsentry.eventtargets adds the aggressor to the target list of dSentries in range.
+    on player damaged by player:
+    - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
+      - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
+        && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvP
+        && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
+        - flag <def[value]> dsentry.target:<context.damager>
+        }
+      }
+    # detects PvE and if listed in dsentry.eventtargets adds the aggressor to the target list of dSentries in range.
+    on entity damaged by player:
+    - if <context.entity> matches player queue clear
+    - if <context.entity> matches npc queue clear
+    - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
+      - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
+        && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvE
+        && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
+        - flag <def[value]> dsentry.target:<context.damager>
+        }
+      }
+    # adds any players who attack dSentries to their target flags.
+    on npc damaged by player:
+    - if <npc.flag[dsentry.is_dsentry]> flag <context.entity> dsentry.target:<context.damager>
+    
+    # TODO: Better way to prevent accidental damage
+    #on npc damaged by npc:
+    #- if <context.entity.as_npc.flag[dsentry.is_dsentry]||false> && <context.damager.as_npc.flag[dsentry.is_dsentry]||false> determine cancelled
+    
+    # adjusts damage dealt by dSentries to the value in dsentry.damage
+    on npc damages entity:
+    - if !<context.damager.as_npc.flag[dsentry.is_dsentry]> queue clear
+    - determine <context.damager.as_npc.flag[dsentry.damage]>
+    
+    # handles the numerous options for the dsentry command.
+    on dsentry command:
+    - determine passively fulfilled
+    - if <context.server> {
+      - define mynpc <server.selected_npc>
+      }
+      else {
+      - if !<player.has_permission[dsentry.command]||false> {
+        - narrate "<&6>You do not have permission to use the dSentry command."
+        - queue clear
+        }
+      - define mynpc <player.selected_npc>
+      }
+    - if %mynpc% == null && <context.args.get[1].length||0> != 0 {
+      - narrate "<&6>You do not have an NPC selected!"
+      - queue clear
+      }
+    - if !<def[mynpc].flag[dsentry.is_dsentry]> && <context.args.get[1].length||0> != 0 && !<context.args.get[1].is[==].to[create]||false> {
+      - narrate "<&6>Your selected NPC is not a dSentry!"
+      - queue clear
+      }
+    - define arg1 <c.args.get[1].escaped||null>
+    - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard
+    - if <def[argList].contains[%arg1%]> inject dsentry_command_%arg1%
+      else {
+      - narrate "<&6>/dSentry create [save-type]"
+      - narrate "<&6>/dSentry save <&lt>save-type<&gt>"
+      - narrate "<&6>/dSentry range <&lt>range<&gt>"
+      - narrate "<&6>/dSentry followrange <&lt>range<&gt>"
+      - narrate "<&6>/dSentry speed <&lt>speed<&gt>"
+      - narrate "<&6>/dSentry damage <&lt>damage<&gt>"
+      - narrate "<&6>/dSentry attackrate <&lt>attackrate<&gt>"
+      - narrate "<&6>/dSentry add <&lt>target<&gt>"
+      - narrate "<&6>/dSentry remove <&lt>target<&gt>"
+      - narrate "<&6>/dSentry guard [player-name]"
+      - narrate "<&6>/dSentry info"
+      }
 
 dsentry_command_info:
     type: task
@@ -484,6 +494,7 @@ dsentry_task_attack:
         - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
+    ##### lines here need changing to include npc guard targets.
     - if <npc.flag[dsentry.follow_target].as_player.is_online||false> {
       - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_player.location>]> > 100 {
         - teleport <npc> <npc.flag[dsentry.follow_target].as_player.location>
