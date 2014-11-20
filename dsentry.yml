@@ -139,23 +139,14 @@ dsentry_command_guard:
     - if <util.player_is_valid[<context.args.get[2].escaped>]> {
       - define player <player[<context.args.get[2].escaped>]||null>
       - if %player% == null {
-        - narrate "<&c>Unknown player or npc."
+        - narrate "<&c>Unknown player."
         - queue clear
         }
       - flag %mynpc% dsentry.follow_target:%player%
       - narrate "<&c>Guarding <&b><def[player].name><&c>!"
       }
-      else if <util.npc_is_valid[<context.args.get[2].escaped>]> {
-      - define npc <npc[<context.args.get[2].escaped>]||null>
-      - if %npc% == null {
-        - narrate "<&c>Unknown npc."
-        - queue clear
-        }
-      - flag %mynpc% dsentry.follow_target:%npc%
-      - narrate "<&c>Guarding <&b><def[npc].name><&c>!"
-      }
       else {
-      - narrate "<&c>Unknown player or npc."
+      - narrate "<&c>Unknown player."
       - queue clear
       }
 
@@ -504,13 +495,13 @@ dsentry_task_attack:
         }
       }
     ##### lines here need changing to include npc guard targets.
-    - if <npc.flag[dsentry.follow_target].as_player.is_online||false> || <npc.flag[dsentry.follow_target].as_npc.is_spawned||false> {
-      - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
-        - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
+    - if <npc.flag[dsentry.follow_target].as_player.is_online||false> {
+      - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_player.location>]> > 100 {
+        - teleport <npc> <npc.flag[dsentry.follow_target].as_player.location>
         }
       - if <npc.flag[dsentry.target]||null> == null || <npc.item_in_hand.material.name> == bow {
-        - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > <npc.flag[dsentry.follow_range]> {
-          - walk <npc> <npc.flag[dsentry.follow_target].as_entity.location> auto_range radius:<npc.flag[dsentry.follow_range]>
+        - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_player.location>]> > <npc.flag[dsentry.follow_range]> {
+          - walk <npc> <npc.flag[dsentry.follow_target].as_player.location> auto_range radius:<npc.flag[dsentry.follow_range]>
           }
         }
       }
