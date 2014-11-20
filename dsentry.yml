@@ -31,6 +31,7 @@ dsentry_world_handler:
     debug: false
     events:
         on server start:
+        # loads/create yml save file, and starts main logic loop
         - if <server.has_file[dsentry_saves.yml]> {
           - yaml load:dsentry_saves.yml id:dsentry_saves
           }
@@ -38,32 +39,41 @@ dsentry_world_handler:
           - yaml create id:dsentry_saves
           }
         - run dsentry_task_logic delay:10t
+        
+        # detects pvp and if listed in dsentry.eventtargets adds the aggressor to the target list of dSentries in range.
         on player damaged by player:
-        - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
+        - foreach <server.get_npcs_flagged[dsentry.is_dsentry].as_list||li@> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
             && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvP
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
           }
+        # detects PvE and if listed in dsentry.eventtargets adds the aggressor to the target list of dSentries in range.
         on entity damaged by player:
         - if <context.entity> matches player queue clear
         - if <context.entity> matches npc queue clear
-        - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
+        - foreach <server.get_npcs_flagged[dsentry.is_dsentry].as_list||li@> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
             && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvE
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
           }
+        # adds any players who attack dSentries to their target flags.
         on npc damaged by player:
-        - if <npc.flag[dsentry.is_dsentry]> flag <context.entity> dsentry.target:<context.damager>
+        - if <npc.has_flag[dsentry.is_dsentry]> flag <context.entity> dsentry.target:<context.damager>
+        
         # TODO: Better way to prevent accidental damage
         #on npc damaged by npc:
         #- if <context.entity.as_npc.flag[dsentry.is_dsentry]||false> && <context.damager.as_npc.flag[dsentry.is_dsentry]||false> determine cancelled
+        
+        # adjusts damage dealt by dSentries to the value in dsentry.damage
         on npc damages entity:
-        - if !<context.damager.as_npc.flag[dsentry.is_dsentry]> queue clear
+        - if !<context.damager.as_npc.has_flag[dsentry.is_dsentry]> queue clear
         - determine <context.damager.as_npc.flag[dsentry.damage]>
+        
+        # handles the numerous options for the dsentry command.
         on dsentry command:
         - determine passively fulfilled
         - if <context.server> {
@@ -80,7 +90,7 @@ dsentry_world_handler:
           - narrate "<&6>You do not have an NPC selected!"
           - queue clear
           }
-        - if !<def[mynpc].flag[dsentry.is_dsentry]> && <context.args.get[1].length||0> != 0 && !<context.args.get[1].is[==].to[create]||false> {
+        - if !<def[mynpc].has_flag[dsentry.is_dsentry]> && <context.args.get[1].length||0> != 0 && !<context.args.get[1].is[==].to[create]||false> {
           - narrate "<&6>Your selected NPC is not a dSentry!"
           - queue clear
           }
@@ -129,14 +139,23 @@ dsentry_command_guard:
     - if <util.player_is_valid[<context.args.get[2].escaped>]> {
       - define player <player[<context.args.get[2].escaped>]||null>
       - if %player% == null {
-        - narrate "<&c>Unknown player."
+        - narrate "<&c>Unknown player or npc."
         - queue clear
         }
       - flag %mynpc% dsentry.follow_target:%player%
       - narrate "<&c>Guarding <&b><def[player].name><&c>!"
       }
+      else if <util.npc_is_valid[<context.args.get[2].escaped>]> {
+      - define npc <npc[<context.args.get[2].escaped>]||null>
+      - if %npc% == null {
+        - narrate "<&c>Unknown npc."
+        - queue clear
+        }
+      - flag %mynpc% dsentry.follow_target:%npc%
+      - narrate "<&c>Guarding <&b><def[npc].name><&c>!"
+      }
       else {
-      - narrate "<&c>Unknown player."
+      - narrate "<&c>Unknown player or npc."
       - queue clear
       }
 
@@ -484,13 +503,14 @@ dsentry_task_attack:
         - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
-    - if <npc.flag[dsentry.follow_target].as_player.is_online||false> {
-      - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_player.location>]> > 100 {
-        - teleport <npc> <npc.flag[dsentry.follow_target].as_player.location>
+    ##### lines here need changing to include npc guard targets.
+    - if <npc.flag[dsentry.follow_target].as_player.is_online||false> || <npc.flag[dsentry.follow_target].as_npc.is_spawned||false> {
+      - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
+        - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
         }
       - if <npc.flag[dsentry.target]||null> == null || <npc.item_in_hand.material.name> == bow {
-        - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_player.location>]> > <npc.flag[dsentry.follow_range]> {
-          - walk <npc> <npc.flag[dsentry.follow_target].as_player.location> auto_range radius:<npc.flag[dsentry.follow_range]>
+        - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > <npc.flag[dsentry.follow_range]> {
+          - walk <npc> <npc.flag[dsentry.follow_target].as_entity.location> auto_range radius:<npc.flag[dsentry.follow_range]>
           }
         }
       }
