@@ -379,7 +379,8 @@ dsentry_command_create:
       - narrate "<&6>There are no saves by that name."
       - queue clear
       }
-    - equip %mynpc% hand:<yaml[dsentry_saves].read[%base%hand]> head:<yaml[dsentry_saves].read[%base%helmet]> chest:<yaml[dsentry_saves].read[%base%chestplate]> legs:<yaml[dsentry_saves].read[%base%leggings]> boots:<yaml[dsentry_saves].read[%base%boots]>
+    - equip %mynpc% hand:<yaml[dsentry_saves].read[%base%hand]> head:<yaml[dsentry_saves].read[%base%helmet]> chest:<yaml[dsentry_saves].read[%base%chestplate]>
+      legs:<yaml[dsentry_saves].read[%base%leggings]> boots:<yaml[dsentry_saves].read[%base%boots]>
     - flag %mynpc% dsentry.follow_range:<yaml[dsentry_saves].read[%base%follow_range]>
     - flag %mynpc% dsentry.follow_target:<yaml[dsentry_saves].read[%base%follow_target]>
     - flag %mynpc% dsentry.range:<yaml[dsentry_saves].read[%base%range]>
