@@ -128,8 +128,8 @@ dsentry_command_info:
       }
     # added a line to show who dSentry is guarding
     - if <def[mynpc].has_flag[dsentry.follow_target]> {
-      - narrate "<&6>Currently Guarding<&co> <&b><def[mynpc].flag[dsentry.follow_target].as_entity.name||null>" }
-    
+      - narrate "<&6>Currently Guarding<&co> <&b><def[mynpc].flag[dsentry.follow_target].as_entity.name||null>" 
+      }
 dsentry_command_guard:
     type: task
     debug: false
