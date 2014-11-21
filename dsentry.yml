@@ -506,16 +506,6 @@ dsentry_task_attack:
         - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
-    # - if <npc.flag[dsentry.follow_target].as_player.is_online||false>> {
-      # - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
-        # - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
-        # }
-      # - if <npc.flag[dsentry.target]||null> == null || <npc.item_in_hand.material.name> == bow {
-        # - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > <npc.flag[dsentry.follow_range]> {
-          # - walk <npc> <npc.flag[dsentry.follow_target].as_entity.location> auto_range radius:<npc.flag[dsentry.follow_range]>
-          # }
-        # }
-      # }
     - if <npc.flag[dsentry.follow_target].as_entity.is_spawned||false> {
       - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
         - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
