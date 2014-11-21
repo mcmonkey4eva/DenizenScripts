@@ -40,27 +40,27 @@ dsentry_world_handler:
           }
         - run dsentry_task_logic delay:10t
         
-        # detects pvp and if listed in dsentry.eventtargets adds the aggressor to the target list of dSentries in range.
+        # detects pvp and (if listed in dsentry.eventtargets) adds the aggressor to the target list of dSentries in range.
         on player damaged by player:
-        - foreach <server.get_npcs_flagged[dsentry.is_dsentry].as_list||li@> {
+        - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
-            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvP
+            && <def[value].flag[dsentry.eventtargets].as_list||null> contains PvP
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
           }
-        # detects PvE and if listed in dsentry.eventtargets adds the aggressor to the target list of dSentries in range.
+        # detects PvE and (if listed in dsentry.eventtargets) adds the aggressor to the target list of dSentries in range.
         on entity damaged by player:
         - if <context.entity> matches player queue clear
         - if <context.entity> matches npc queue clear
-        - foreach <server.get_npcs_flagged[dsentry.is_dsentry].as_list||li@> {
+        - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
-            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvE
+            && <def[value].flag[dsentry.eventtargets].as_list||null> contains PvE
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
           }
-        # adds any players who attack dSentries to their target flags.
+        # adds any player who attacks a dSentry to the the dSentry's target flag.
         on npc damaged by player:
         - if <npc.has_flag[dsentry.is_dsentry]> flag <context.entity> dsentry.target:<context.damager>
         
@@ -126,7 +126,10 @@ dsentry_command_info:
       else {
       - narrate "<&6>Targets<&co> <&b><def[mynpc].flag[dsentry.targets].formatted||None><&6>, or players flagged <&b><def[mynpc].flag[dsentry.flagtargets].formatted||None>"
       }
-
+    # added a line to show who dSentry is guarding
+    - if <def[mynpc].has_flag[dsentry.follow_target]> {
+      - narrate "<&6>Currently Guarding<&co> <&b><def[mynpc].flag[dsentry.follow_target].as_entity.name||null>" }
+    
 dsentry_command_guard:
     type: task
     debug: false
@@ -148,7 +151,7 @@ dsentry_command_guard:
       else if <util.npc_is_valid[<context.args.get[2].escaped>]> {
       - define npc <npc[<context.args.get[2].escaped>]||null>
       - if %npc% == null {
-        - narrate "<&c>Unknown npc."
+        - narrate "<&c>Unknown player or npc."
         - queue clear
         }
       - flag %mynpc% dsentry.follow_target:%npc%
@@ -483,7 +486,7 @@ dsentry_proc_picktarget:
       }
     - determine null
 
-# Makes a sentry NPC attack the target
+# Makes a dSentry NPC attack the target
 dsentry_task_attack:
     type: task
     debug: false
@@ -503,8 +506,17 @@ dsentry_task_attack:
         - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
-    ##### lines changed here to include npc guard targets.
-    - if <npc.flag[dsentry.follow_target].as_player.is_online||<npc.flag[dsentry.follow_target].as_npc.is_spawned||false>> {
+    # - if <npc.flag[dsentry.follow_target].as_player.is_online||false>> {
+      # - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
+        # - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
+        # }
+      # - if <npc.flag[dsentry.target]||null> == null || <npc.item_in_hand.material.name> == bow {
+        # - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > <npc.flag[dsentry.follow_range]> {
+          # - walk <npc> <npc.flag[dsentry.follow_target].as_entity.location> auto_range radius:<npc.flag[dsentry.follow_range]>
+          # }
+        # }
+      # }
+    - if <npc.flag[dsentry.follow_target].as_entity.is_spawned||false> {
       - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
         - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
         }
@@ -552,3 +564,4 @@ dsentry_task_removearrow:
     debug: false
     script:
     - if %hit_entities% == li@ remove %shot_entities%
+    
