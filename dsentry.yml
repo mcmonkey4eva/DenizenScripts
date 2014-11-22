@@ -43,7 +43,7 @@ dsentry_world_handler:
         # detects pvp and (if listed in dsentry.eventtargets) adds the aggressor to the target list of dSentries in range.
         on player damaged by player:
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-          - if <def[value].is_spawned> && !<def[value].has_flag[dsentry.target]> 
+          - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null 
             && <def[value].flag[dsentry.eventtargets]||null> contains PvP
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
@@ -54,7 +54,7 @@ dsentry_world_handler:
         - if <context.entity> matches player queue clear
         - if <context.entity> matches npc queue clear
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-          - if <def[value].is_spawned> && !<def[value].has_flag[dsentry.target]>
+          - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
             && <def[value].flag[dsentry.eventtargets]||null> contains PvE
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
@@ -506,27 +506,20 @@ dsentry_task_attack:
         - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
+    - define valid false
     - if <util.player_is_valid[<npc.flag[dsentry.follow_target]||null>]> {
-      - if <npc.flag[dsentry.follow_target].as_player.is_online||false> {
-        - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_player.location>]> > 100 {
-          - teleport <npc> <npc.flag[dsentry.follow_target].as_player.location>
-          }
-        - if <npc.flag[dsentry.target]||null> == null || <npc.item_in_hand.material.name> == bow {
-          - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_player.location>]> > <npc.flag[dsentry.follow_range]> {
-            - walk <npc> <npc.flag[dsentry.follow_target].as_player.location> auto_range radius:<npc.flag[dsentry.follow_range]>
-            }
-          }
+      - if <npc.flag[dsentry.follow_target].as_player.is_online||false> define valid true
+      }
+      else if <util.npc_is_valid[<npc.flag[dsentry.follow_target]||null>]> {
+        - if <npc.flag[dsentry.follow_target].as_npc.is_spawned||false> define valid true
         }
-      }  
-    - if <util.npc_is_valid[<npc.flag[dsentry.follow_target]||null>]> {
-      - if <npc.flag[dsentry.follow_target].as_npc.is_spawned||false> {
-        - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
-          - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
-          }
-        - if <npc.flag[dsentry.target]||null> == null || <npc.item_in_hand.material.name> == bow {
-          - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > <npc.flag[dsentry.follow_range]> {
-            - walk <npc> <npc.flag[dsentry.follow_target].as_entity.location> auto_range radius:<npc.flag[dsentry.follow_range]>
-            }
+    - if %valid% {
+      - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > 100 {
+        - teleport <npc> <npc.flag[dsentry.follow_target].as_entity.location>
+        }
+      - if <npc.flag[dsentry.target]||null> == null || <npc.item_in_hand.material.name> == bow {
+        - if <npc.location.distance[<npc.flag[dsentry.follow_target].as_entity.location>]> > <npc.flag[dsentry.follow_range]> {
+          - walk <npc> <npc.flag[dsentry.follow_target].as_entity.location> auto_range radius:<npc.flag[dsentry.follow_range]>
           }
         }
       }
