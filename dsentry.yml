@@ -507,10 +507,10 @@ dsentry_task_attack:
         }
       }
     - define valid false
-    - if <util.player_is_valid[<npc.flag[dsentry.follow_target]||null>]> {
+    - if <npc.flag[dsentry.follow_target||null> matches player {
       - if <npc.flag[dsentry.follow_target].as_player.is_online||false> define valid true
       }
-      else if <util.npc_is_valid[<npc.flag[dsentry.follow_target]||null>]> {
+      else if <npc.flag[dsentry.follow_target||null> matches npc {
         - if <npc.flag[dsentry.follow_target].as_npc.is_spawned||false> define valid true
         }
     - if %valid% {
