@@ -44,7 +44,7 @@ dsentry_world_handler:
         on player damaged by player:
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null 
-            && <def[value].flag[dsentry.eventtargets]||null> contains PvP
+            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvP
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
@@ -55,7 +55,7 @@ dsentry_world_handler:
         - if <context.entity> matches npc queue clear
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
-            && <def[value].flag[dsentry.eventtargets]||null> contains PvE
+            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvE
             && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
