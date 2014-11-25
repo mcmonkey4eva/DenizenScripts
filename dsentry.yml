@@ -562,10 +562,3 @@ dsentry_task_removearrow:
     debug: false
     script:
     - if %hit_entities% == li@ remove %shot_entities%
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    
->>>>>>> 0bdfad5... Npc's as guard targets now working.
-=======
->>>>>>> e65407a... fully separate player and npc section in dsentry_task_attack
