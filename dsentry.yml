@@ -124,6 +124,7 @@ dsentry_command_info:
     - narrate "<&6>Your selected NPC <&2>is<&6> a dSentry with stats<&co>"
     - narrate "<&6>Range<&co> <&b><def[mynpc].flag[dsentry.range]>"
     - narrate "<&6>Damage<&co> <&b><def[mynpc].flag[dsentry.damage]>"
+    - narrate "<&6>Armor<&co> <&b><def[mynpc].flag[dsentry.armor].mul[100].as_int>%"
     - narrate "<&6>Walk speed<&co> <&b><def[mynpc].flag[dsentry.walkspeed]>"
     - narrate "<&6>Attack rate<&co> <&b><def[mynpc].flag[dsentry.attackrate]>"
     - if <def[mynpc].flag[dsentry.flagtargets].size||0> == 0 {
@@ -352,7 +353,7 @@ dsentry_command_armor:
       - narrate "<&6>That armor value doesn't look like a proper number."
       - queue clear
       }
-    - flag %mynpc% dsentry.armor:<context.args.get[2]>
+    - flag %mynpc% dsentry.armor:<context.args.get[2].div[100]>
     - narrate "<&6>Armor set."
 
 dsentry_command_speed:
@@ -590,7 +591,7 @@ dsentry_task_attack:
       - animate <npc> animation:stop_use_item
       - queue clear
       }
-    - if <npc.item_in_hand.material.name||null> != bow {
+    - if <npc.item_in_hand.material.name> != bow {
       - pause waypoints
       }
     - define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]>
