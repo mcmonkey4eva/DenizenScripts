@@ -6,7 +6,7 @@
 #
 # @author mcmonkey
 # With help from Jabeltoo
-# @date 2014 / 11 / 25
+# @date 2014 / 11 / 26
 # @build 1543
 # @version 6.3
 #
@@ -480,12 +480,7 @@ dsentry_proc_picktarget:
           }
         }
       }
-    # are both of these next if... sections needed? maybe they should be combined to avoid duplication? ;-)
-    - if <npc.flag[dsentry.targets].as_list||null> == null {
-      - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
-      - queue clear
-      }
-    - if <npc.flag[dsentry.targets].size> == 0 {
+    - if <npc.flag[dsentry.targets].size||0> == 0 {
       - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
       - queue clear
       }
@@ -539,11 +534,11 @@ dsentry_task_attack:
       }
     # call dsentry_proc_picktarget if there is no current target, the current target is not spawned, or is out of sight.
     - if <npc.flag[dsentry.target]||null> == null {
-      - flag npc dsentry.target:<proc[dsentry_proc_picktarget]||null> 
+      - flag npc dsentry.target:<proc[dsentry_proc_picktarget]> 
       }
       else {
       - if !<util.entity_is_spawned[<npc.flag[dsentry.target]>]||false> || !<npc.can_see[<npc.flag[dsentry.target]>]||false> {
-        - flag npc dsentry.target:<proc[dsentry_proc_picktarget]||null>
+        - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
     # section handles the following behaviour of dSentries who are guarding 
@@ -572,7 +567,7 @@ dsentry_task_attack:
     - if <npc.item_in_hand.material.name||null> != bow {
       - pause waypoints
       }
-    - define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]||npc.location.add[0,0.33,0]>
+    - define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]>
     - look %loc%
     - if <npc.item_in_hand.material.name> == bow {
       # todo: should critical=true be enabled in some cases? (corrupts damage calc)
