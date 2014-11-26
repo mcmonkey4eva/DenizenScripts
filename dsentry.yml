@@ -6,7 +6,7 @@
 #
 # @author mcmonkey
 # With help from Jabeltoo
-# @date 2014 / 11 / 25
+# @date 2014 / 11 / 26
 # @build 1543
 # @version 6.3
 #
@@ -69,12 +69,16 @@ dsentry_world_handler:
         #on npc damaged by npc:
         #- if <context.entity.as_npc.flag[dsentry.is_dsentry]||false> && <context.damager.as_npc.flag[dsentry.is_dsentry]||false> determine cancelled
         
+        # TODO: calculate NPC armor properly
+        #on npc damaged:
+        
         # adjusts damage dealt by dSentries to the value in dsentry.damage
         on npc damages entity:
         - if !<context.damager.as_npc.has_flag[dsentry.is_dsentry]> queue clear
-        - determine <context.damager.as_npc.flag[dsentry.damage]>
+        - determine <proc[dsentry_proc_calculatedamage]> npc:<context.damager.as_npc>
         
         # handles the numerous options for the dsentry command.
+        # TODO: Command script
         on dsentry command:
         - determine passively fulfilled
         - if <context.server> {
@@ -96,7 +100,7 @@ dsentry_world_handler:
           - queue clear
           }
         - define arg1 <c.args.get[1].escaped||null>
-        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard
+        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor
         - if <def[argList].contains[%arg1%]> inject dsentry_command_%arg1%
           else {
           - narrate "<&6>/dSentry create [save-type]"
@@ -106,6 +110,7 @@ dsentry_world_handler:
           - narrate "<&6>/dSentry speed <&lt>speed<&gt>"
           - narrate "<&6>/dSentry damage <&lt>damage<&gt>"
           - narrate "<&6>/dSentry attackrate <&lt>attackrate<&gt>"
+          - narrate "<&6>/dSentry armor <&lt>armor<&gt>"
           - narrate "<&6>/dSentry add <&lt>target<&gt>"
           - narrate "<&6>/dSentry remove <&lt>target<&gt>"
           - narrate "<&6>/dSentry guard [player-name]"
@@ -239,7 +244,7 @@ dsentry_command_remove:
       }
     # section deals with removing event targets
     - if <context.args.get[2].starts_with[event<&co>]> {
-      - if <context.args.get[2].contains[clearall]||false> {
+      - if <context.args.get[2].contains[clearall]> {
         - flag %mynpc% dsentry.eventtargets:!
         - narrate "<&6>All event targets cleared."
         - queue clear
@@ -257,9 +262,8 @@ dsentry_command_remove:
       - narrate "<&6>That target doesn't look like a proper entity type."
       - queue clear
       }
-    - if <context.args.get[2].contains[clearall]||false> {
+    - if <context.args.get[2].contains[clearall]> {
       # flag set to 'none' to prevent console spam of "no targets set message"
-      - flag %mynpc% dsentry.targets:!
       - flag %mynpc% dsentry.targets:none
       - narrate "<&6>All entity type targets cleared."     
       - queue clear
@@ -331,6 +335,26 @@ dsentry_command_damage:
     - flag %mynpc% dsentry.damage:<context.args.get[2]>
     - narrate "<&6>Damage set."
 
+dsentry_command_armor:
+    type: task
+    debug: false
+    script:
+    - if <context.args.get[2].is[==].to[null]||true> {
+      - narrate "<&6>/dSentry armor <&lt>armor<&gt>"
+      - narrate "<&6>Armor = what percentage of damage to take away"
+      - queue clear
+      }
+    - if !<context.args.get[2].is[==].to[<context.args.get[2].escaped>]> {
+      - narrate "<&6>That armor value doesn't look like a proper number."
+      - queue clear
+      }
+    - if !<context.args.get[2].is[matches].to[integer]> {
+      - narrate "<&6>That armor value doesn't look like a proper number."
+      - queue clear
+      }
+    - flag %mynpc% dsentry.armor:<context.args.get[2]>
+    - narrate "<&6>Armor set."
+
 dsentry_command_speed:
     type: task
     debug: false
@@ -393,6 +417,7 @@ dsentry_command_save:
     - yaml write:dsentry.<context.args.get[2]>.attackrate value:<def[mynpc].flag[dsentry.attackrate]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.walkspeed value:<def[mynpc].flag[dsentry.walkspeed]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.damage value:<def[mynpc].flag[dsentry.damage]> id:dsentry_saves
+    - yaml write:dsentry.<context.args.get[2]>.armor value:<def[mynpc].flag[dsentry.armor]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.targets value:<def[mynpc].flag[dsentry.targets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.flagtargets value:<def[mynpc].flag[dsentry.flagtargets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.eventtargets value:<def[mynpc].flag[dsentry.eventtargets].as_list||li@> id:dsentry_saves
@@ -444,6 +469,7 @@ dsentry_command_create:
     - flag %mynpc% dsentry.attackrate:<yaml[dsentry_saves].read[%base%attackrate]>
     - flag %mynpc% dsentry.attackping:0
     - flag %mynpc% dsentry.damage:<yaml[dsentry_saves].read[%base%damage]>
+    - flag %mynpc% dsentry.armor:<yaml[dsentry_saves].read[%base%armor]>
     - flag %mynpc% dsentry.targets:!
     - flag %mynpc% dsentry.targets:|:<yaml[dsentry_saves].read[%base%targets]>
     - flag %mynpc% dsentry.flagtargets:!
@@ -480,12 +506,7 @@ dsentry_proc_picktarget:
           }
         }
       }
-    # are both of these next if... sections needed? maybe they should be combined to avoid duplication? ;-)
-    - if <npc.flag[dsentry.targets].as_list||null> == null {
-      - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
-      - queue clear
-      }
-    - if <npc.flag[dsentry.targets].size> == 0 {
+    - if <npc.flag[dsentry.targets].size||0> == 0 {
       - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
       - queue clear
       }
@@ -539,11 +560,11 @@ dsentry_task_attack:
       }
     # call dsentry_proc_picktarget if there is no current target, the current target is not spawned, or is out of sight.
     - if <npc.flag[dsentry.target]||null> == null {
-      - flag npc dsentry.target:<proc[dsentry_proc_picktarget]||null> 
+      - flag npc dsentry.target:<proc[dsentry_proc_picktarget]> 
       }
       else {
       - if !<util.entity_is_spawned[<npc.flag[dsentry.target]>]||false> || !<npc.can_see[<npc.flag[dsentry.target]>]||false> {
-        - flag npc dsentry.target:<proc[dsentry_proc_picktarget]||null>
+        - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
     # section handles the following behaviour of dSentries who are guarding 
@@ -572,10 +593,10 @@ dsentry_task_attack:
     - if <npc.item_in_hand.material.name||null> != bow {
       - pause waypoints
       }
-    - define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]||npc.location.add[0,0.33,0]>
+    - define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]>
     - look %loc%
     - if <npc.item_in_hand.material.name> == bow {
-      # todo: should critical=true be enabled in some cases? (corrupts damage calc)
+      # TODO: should critical=true be enabled in some cases? (corrupts damage calc)
       - define settings knockback=1
       - if <npc.item_in_hand.enchantments||li@> contains ARROW_FIRE {
         - define settings %settings%;fire_time=1m
@@ -590,7 +611,7 @@ dsentry_task_attack:
       }
       else {
       - if <npc.entity_type> == player animate <npc> animation:arm_swing
-      - hurt <npc.flag[dsentry.target]> <npc.flag[dsentry.damage]>
+      - hurt <npc.flag[dsentry.target]> <proc[dsentry_proc_calculatedamage]>
       - if <npc.item_in_hand> != i@air {
         - if <npc.item_in_hand.enchantments||li@> contains FIRE_ASPECT {
           - adjust <npc.flag[dsentry.target]> fire_time:10s
@@ -603,3 +624,23 @@ dsentry_task_removearrow:
     debug: false
     script:
     - if %hit_entities% == li@ remove %shot_entities%
+
+dsentry_proc_calculatearmor:
+    type: procedure
+    script:
+    # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value
+    - if <npc.flag[dsentry.armor]> >= 0 {
+      -  determine <npc.flag[dsentry.armor]>
+      }
+    # TODO: calculate armor based on worn armor
+    # TODO: Make the default damage -1
+
+dsentry_proc_calculatedamage:
+    type: procedure
+    script:
+    # flag npc damage '-1' to use calculated damage, otherwise, trust the flag value
+    - if <npc.flag[dsentry.damage]> >= 0 {
+      - determine <npc.flag[dsentry].damage]>
+      }
+    # TODO: calculate damage based on held item
+    # TODO: Make the default damage -1
