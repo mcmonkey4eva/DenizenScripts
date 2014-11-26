@@ -41,7 +41,7 @@ dsentry_world_handler:
           }
         - run dsentry_task_logic delay:10t
         
-        # detects pvp and (if listed in dsentry.eventtargets) adds the aggressor to the target list of dSentries in range.
+        # detects PvP and (if listed in dsentry.eventtargets) adds the aggressor to the target list of dSentries in range.
         on player damaged by player:
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null 
@@ -174,7 +174,7 @@ dsentry_command_add:
       - narrate "<&6>or event:PvP, or event:PvE"
       - queue clear
       }
-    # section deals with flag targets
+    # section deals with adding flag targets
     - if <context.args.get[2].starts_with[flagged<&co>]> {
       - if <def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]||false> {
         - narrate "<&6>That flag target is already set."
@@ -184,17 +184,21 @@ dsentry_command_add:
       - narrate "<&6>Flag target added."
       - queue clear
       }
-    # section deals with event targets
+    # section deals with adding event targets
     - if <context.args.get[2].starts_with[event<&co>]> {
       - if <def[mynpc].flag[dsentry.eventtargets].contains[<context.args.get[2].replace[event<&co>]>]> {
         - narrate "<&6>That event target is already set."
+        - queue clear
+        }
+      - if 'PvP|PvE' !contains <context.args.get[2].replace[event<&co>]> {
+        - narrate "<&6>dSentry only accepts PvP or PvE as event targets"
         - queue clear
         }
       - flag %mynpc% dsentry.eventtargets:->:<context.args.get[2].replace[event<&co>]>
       - narrate "<&6>Event target added."
       - queue clear
       }
-    # section deals with entity type targets
+    # section deals with adding entity type targets
     - if !<context.args.get[2].is[==].to[<context.args.get[2].escaped>]> {
       - narrate "<&6>That target doesn't look like a proper entity type."
       - queue clear
@@ -204,6 +208,7 @@ dsentry_command_add:
       - queue clear
       }
     - flag %mynpc% dsentry.targets:->:<context.args.get[2]>
+    - if <def[mynpc].flag[dsentry.targets].contains[none]> flag %mynpc% dsentry.targets:<-:none
     - narrate "<&6>Added target."
 
 dsentry_command_remove:
@@ -217,8 +222,13 @@ dsentry_command_remove:
       - narrate "<&6>or event:PvP, or event:PvE"
       - queue clear
       }
-    # section deals with flag targets
+    # section deals with removing flag targets
     - if <context.args.get[2].starts_with[flagged<&co>]> {
+      - if <context.args.get[2].contains[clearall]||false> {
+        - flag %mynpc% dsentry.flagtargets:!
+        - narrate "<&6>All flag targets cleared."
+        - queue clear
+        }
       - if !<def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]||false> {
         - narrate "<&6>That flag target isn't set."
         - queue clear
@@ -227,8 +237,13 @@ dsentry_command_remove:
       - narrate "<&6>Flag target removed."
       - queue clear
       }
-    # section deals with event targets
+    # section deals with removing event targets
     - if <context.args.get[2].starts_with[event<&co>]> {
+      - if <context.args.get[2].contains[clearall]||false> {
+        - flag %mynpc% dsentry.eventtargets:!
+        - narrate "<&6>All event targets cleared."
+        - queue clear
+        }
       - if !<def[mynpc].flag[dsentry.eventtargets].contains[<context.args.get[2].replace[event<&co>]>]> {
         - narrate "<&6>That event target isn't set."
         - queue clear
@@ -237,9 +252,16 @@ dsentry_command_remove:
       - narrate "<&6>Event target removed."
       - queue clear
       }
-    # section deals with entity targets
+    # section deals with removing entity targets
     - if !<context.args.get[2].is[==].to[<context.args.get[2].escaped>]> {
       - narrate "<&6>That target doesn't look like a proper entity type."
+      - queue clear
+      }
+    - if <context.args.get[2].contains[clearall]||false> {
+      # flag set to 'none' to prevent console spam of "no targets set message"
+      - flag %mynpc% dsentry.targets:!
+      - flag %mynpc% dsentry.targets:none
+      - narrate "<&6>All entity type targets cleared."     
       - queue clear
       }
     - if !<def[mynpc].flag[dsentry.targets].contains[<context.args.get[2]>]||false> {
@@ -452,12 +474,13 @@ dsentry_proc_picktarget:
     debug: false
     script:
     - if <npc.flag[dsentry.target]||null> != null {
-      - if <npc.flag[dsentry.target].as_entity.is_spawned> {
+      - if <npc.flag[dsentry.target].as_entity.is_spawned||false> {
         - if <npc.location.distance[<npc.flag[dsentry.target].as_entity.location>]> < <npc.flag[dsentry.range]> {
           - determine <npc.flag[dsentry.target]>
           }
         }
       }
+    # are both of these next if... sections needed? maybe they should be combined to avoid duplication? ;-)
     - if <npc.flag[dsentry.targets].as_list||null> == null {
       - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
       - queue clear
@@ -506,6 +529,7 @@ dsentry_task_attack:
     type: task
     debug: false
     script:
+    # this section adds 10 to dsentry.attackping every time it is called by dsentry_task_logic (every 10 ticks).
     - flag npc dsentry.attackping:<npc.flag[dsentry.attackping].add[10].asint||0>
     - if <npc.flag[dsentry.attackping]> >= <npc.flag[dsentry.attackrate]> {
       - flag npc dsentry.attackping:0
@@ -513,14 +537,16 @@ dsentry_task_attack:
       else {
       - queue clear
       }
+    # call dsentry_proc_picktarget if there is no current target, the current target is not spawned, or is out of sight.
     - if <npc.flag[dsentry.target]||null> == null {
-      - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
+      - flag npc dsentry.target:<proc[dsentry_proc_picktarget]||null> 
       }
       else {
-      - if !<util.entity_is_spawned[<npc.flag[dsentry.target]||null>]> || !<npc.can_see[<npc.flag[dsentry.target]||null>]||false> {
-        - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
+      - if !<util.entity_is_spawned[<npc.flag[dsentry.target]>]||false> || !<npc.can_see[<npc.flag[dsentry.target]>]||false> {
+        - flag npc dsentry.target:<proc[dsentry_proc_picktarget]||null>
         }
       }
+    # section handles the following behaviour of dSentries who are guarding 
     - define valid false
     - if <npc.flag[dsentry.follow_target]||null> matches player {
       - if <npc.flag[dsentry.follow_target].as_player.is_online||false> define valid true
@@ -538,14 +564,15 @@ dsentry_task_attack:
           }
         }
       }
+    # end of guarding specific code
     - if <npc.flag[dsentry.target]||null> == null {
       - animate <npc> animation:stop_use_item
       - queue clear
       }
-    - if <npc.item_in_hand.material.name> != bow {
+    - if <npc.item_in_hand.material.name||null> != bow {
       - pause waypoints
       }
-    - define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]>
+    - define loc <npc.flag[dsentry.target].as_entity.location.add[0,0.33,0]||npc.location.add[0,0.33,0]>
     - look %loc%
     - if <npc.item_in_hand.material.name> == bow {
       # todo: should critical=true be enabled in some cases? (corrupts damage calc)
