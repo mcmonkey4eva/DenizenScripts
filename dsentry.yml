@@ -5,9 +5,10 @@
 # | Sentry rescripted in Denizen!
 #
 # @author mcmonkey
-# @date 2014 / 10 / 19
-# @build 1534
-# @version 6.2
+# With help from Jabeltoo
+# @date 2014 / 11 / 25
+# @build 1543
+# @version 6.3
 #
 # Installation:
 # This script requires a server restart before it will begin running.
