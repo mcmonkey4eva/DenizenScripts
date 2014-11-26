@@ -170,8 +170,10 @@ dsentry_command_add:
       - narrate "<&6>/dSentry add <&lt>target<&gt>"
       - narrate "<&6>Target = an entity type, EG creeper or pig"
       - narrate "<&6>You can also do flagged:FlagName"
+      - narrate "<&6>or event:PvP, or event:PvE"
       - queue clear
       }
+    # section deals with flag targets
     - if <context.args.get[2].starts_with[flagged<&co>]> {
       - if <def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]||false> {
         - narrate "<&6>That flag target is already set."
@@ -181,6 +183,7 @@ dsentry_command_add:
       - narrate "<&6>Flag target added."
       - queue clear
       }
+    # section deals with event targets
     - if <context.args.get[2].starts_with[event<&co>]> {
       - if <def[mynpc].flag[dsentry.eventtargets].contains[<context.args.get[2].replace[event<&co>]>]> {
         - narrate "<&6>That event target is already set."
@@ -190,6 +193,7 @@ dsentry_command_add:
       - narrate "<&6>Event target added."
       - queue clear
       }
+    # section deals with entity type targets
     - if !<context.args.get[2].is[==].to[<context.args.get[2].escaped>]> {
       - narrate "<&6>That target doesn't look like a proper entity type."
       - queue clear
@@ -208,8 +212,11 @@ dsentry_command_remove:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry remove <&lt>target<&gt>"
       - narrate "<&6>Target = an entity type, EG creeper or pig"
+      - narrate "<&6>You can also do flagged:FlagName"
+      - narrate "<&6>or event:PvP, or event:PvE"
       - queue clear
       }
+    # section deals with flag targets
     - if <context.args.get[2].starts_with[flagged<&co>]> {
       - if !<def[mynpc].flag[dsentry.flagtargets].contains[<context.args.get[2].replace[flagged<&co>]>]||false> {
         - narrate "<&6>That flag target isn't set."
@@ -219,6 +226,7 @@ dsentry_command_remove:
       - narrate "<&6>Flag target removed."
       - queue clear
       }
+    # section deals with event targets
     - if <context.args.get[2].starts_with[event<&co>]> {
       - if !<def[mynpc].flag[dsentry.eventtargets].contains[<context.args.get[2].replace[event<&co>]>]> {
         - narrate "<&6>That event target isn't set."
@@ -228,6 +236,7 @@ dsentry_command_remove:
       - narrate "<&6>Event target removed."
       - queue clear
       }
+    # section deals with entity targets
     - if !<context.args.get[2].is[==].to[<context.args.get[2].escaped>]> {
       - narrate "<&6>That target doesn't look like a proper entity type."
       - queue clear
@@ -363,6 +372,7 @@ dsentry_command_save:
     - yaml write:dsentry.<context.args.get[2]>.damage value:<def[mynpc].flag[dsentry.damage]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.targets value:<def[mynpc].flag[dsentry.targets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.flagtargets value:<def[mynpc].flag[dsentry.flagtargets].as_list||li@> id:dsentry_saves
+    - yaml write:dsentry.<context.args.get[2]>.eventtargets value:<def[mynpc].flag[dsentry.eventtargets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.hand value:<def[mynpc].item_in_hand> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.helmet value:<def[mynpc].equipment.helmet> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.chestplate value:<def[mynpc].equipment.chestplate> id:dsentry_saves
@@ -386,6 +396,7 @@ dsentry_command_create:
       - flag %mynpc% dsentry.targets:!
       - flag %mynpc% dsentry.targets:|:zombie|creeper|spider|skeleton|witch
       - flag %mynpc% dsentry.flagtargets:!
+      - flag %mynpc% dsentry.eventtargets:!
       - adjust %mynpc% teleport_on_stuck:true
       - flag %mynpc% dsentry.is_dsentry
       - adjust %mynpc% teleport_on_stuck:false
@@ -414,6 +425,8 @@ dsentry_command_create:
     - flag %mynpc% dsentry.targets:|:<yaml[dsentry_saves].read[%base%targets]>
     - flag %mynpc% dsentry.flagtargets:!
     - flag %mynpc% dsentry.flagtargets:|:<yaml[dsentry_saves].read[%base%flagtargets]>
+    - flag %mynpc% dsentry.eventtargets:!
+    - flag %mynpc% dsentry.eventtargets:|:<yaml[dsentry_saves].read[%base%eventtargets]>
     - flag %mynpc% dsentry.is_dsentry
     - narrate "<&6>NPC turned into a custom dSentry."
 
