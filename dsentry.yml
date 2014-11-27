@@ -31,7 +31,7 @@ dsentry_world_handler:
     type: world
     debug: false
     events:
-        on server start:
+        on reload scripts:
         # loads/create yml save file, and starts main logic loop
         - if <server.has_file[dsentry_saves.yml]> {
           - yaml load:dsentry_saves.yml id:dsentry_saves
@@ -39,7 +39,15 @@ dsentry_world_handler:
           else {
           - yaml create id:dsentry_saves
           }
-        - run dsentry_task_logic delay:10t
+        # a quick foreach to only start dsentry_task_logic if it is not already running or looping.
+        - if <server.has_flag[task_logic_looping]> define StartLogic false
+          else {
+          - define StartLogic true
+          - foreach <queue.list> {
+            - if %value% contains DSENTRY_TASK_LOGIC define StartLogic false
+            }
+          }
+        - if %StartLogic% run dsentry_task_logic delay:10t
         
         # detects PvP and (if listed in dsentry.eventtargets) adds the aggressor to the target list of dSentries in range.
         on player damaged by player:
@@ -494,6 +502,7 @@ dsentry_task_logic:
           }
         }
       }
+    - flag server task_logic_looping duration:10t
     - run dsentry_task_logic delay:10t
 
 # Chooses a nearby target
