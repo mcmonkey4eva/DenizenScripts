@@ -128,20 +128,17 @@ dsentry_world_handler:
 
 dsentry_command_startloop:
     type: task
-    debug: flase
+    debug: false
     script:
     # start dsentry_task_logic if it is not already running.
-    - define StartLogic true
     - foreach <queue.list> {
       - if %value% contains DSENTRY_TASK_LOGIC {
-        - define StartLogic false
         - narrate "<&6>dSentry logic loop is already running"
         - queue clear
         }
       }
-    - if %StartLogic% {
-      - narrate "<&6>dSentry logic loop started."
-      - run dsentry_task_logic delay:10t
+    - narrate "<&6>dSentry logic loop started."
+    - run dsentry_task_logic delay:10t
         
 dsentry_command_info:
     type: task
