@@ -441,6 +441,7 @@ dsentry_command_create:
       - flag %mynpc% dsentry.walkspeed:1
       - flag %mynpc% dsentry.attackrate:30
       - flag %mynpc% dsentry.attackping:0
+      - flag %mynpc% dsentry.armor:0
       - flag %mynpc% dsentry.damage:2
       - flag %mynpc% dsentry.targets:!
       - flag %mynpc% dsentry.targets:|:zombie|creeper|spider|skeleton|witch
@@ -629,19 +630,19 @@ dsentry_task_removearrow:
 dsentry_proc_calculatearmor:
     type: procedure
     script:
-    # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value
+    # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value (which can just be 0; for no armour)
     - if <npc.flag[dsentry.armor]> >= 0 {
       -  determine <npc.flag[dsentry.armor]>
       }
-    # TODO: calculate armor based on worn armor
-    # TODO: Make the default damage -1
+    # TODO: calculate armor based on worn armor <- I have a idea on how to do this one.
+    # TODO: Make the default armor = 0 <- Have done this today - Jabel
 
 dsentry_proc_calculatedamage:
     type: procedure
     script:
     # flag npc damage '-1' to use calculated damage, otherwise, trust the flag value
     - if <npc.flag[dsentry.damage]> >= 0 {
-      - determine <npc.flag[dsentry].damage]>
+      - determine <npc.flag[dsentry.damage]>
       }
     # TODO: calculate damage based on held item
     # TODO: Make the default damage -1
