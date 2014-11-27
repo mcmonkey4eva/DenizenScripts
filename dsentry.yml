@@ -5,7 +5,7 @@
 # | Sentry rescripted in Denizen!
 #
 # @author mcmonkey
-# With help from Jabeltoo
+# With help from Jabelpeeps (Jabeltoo on IRC)
 # @date 2014 / 11 / 26
 # @build 1543
 # @version 6.3
@@ -113,7 +113,7 @@ dsentry_world_handler:
           - narrate "<&6>/dSentry armor <&lt>armor<&gt>"
           - narrate "<&6>/dSentry add <&lt>target<&gt>"
           - narrate "<&6>/dSentry remove <&lt>target<&gt>"
-          - narrate "<&6>/dSentry guard [player-name]"
+          - narrate "<&6>/dSentry guard [player/npc-name]"
           - narrate "<&6>/dSentry info"
           }
 
@@ -176,7 +176,7 @@ dsentry_command_add:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry add <&lt>target<&gt>"
       - narrate "<&6>Target = an entity type, EG creeper or pig"
-      - narrate "<&6>You can also do flagged:FlagName"
+      - narrate "<&6>You can also do flagged:<&lt>FlagName<&gt>"
       - narrate "<&6>or event:PvP, or event:PvE"
       - queue clear
       }
@@ -224,13 +224,13 @@ dsentry_command_remove:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry remove <&lt>target<&gt>"
       - narrate "<&6>Target = an entity type, EG creeper or pig"
-      - narrate "<&6>You can also do flagged:FlagName"
+      - narrate "<&6>You can also do flagged:<&lt>FlagName<&gt>"
       - narrate "<&6>or event:PvP, or event:PvE"
       - queue clear
       }
     # section deals with removing flag targets
     - if <context.args.get[2].starts_with[flagged<&co>]> {
-      - if <context.args.get[2].contains[clearall]||false> {
+      - if <context.args.get[2].contains[clearall]> {
         - flag %mynpc% dsentry.flagtargets:!
         - narrate "<&6>All flag targets cleared."
         - queue clear
