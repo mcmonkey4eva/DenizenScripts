@@ -39,13 +39,18 @@ dsentry_world_handler:
           else {
           - yaml create id:dsentry_saves
           }
-        # a quick foreach to only start dsentry_task_logic if it is not already running or looping.
-        - if <server.has_flag[task_logic_looping]> define StartLogic false
-          else {
-          - define StartLogic true
-          - foreach <queue.list> {
-            - if %value% contains DSENTRY_TASK_LOGIC define StartLogic false
-            }
+          
+        # set some flags for use in armour calculations. (It doesn't matter if they are already set)
+        # (each flag holds air|leather|gold|chain|iron|diamond armour damage protection as % reduction)
+        - flag server dsentry.armorvalues.helmet:0|4|8|8|8|12
+        - flag server dsentry.armorvalues.chest:0|12|20|20|24|32
+        - flag server dsentry.armorvalues.legs:0|8|12|16|20|24
+        - flag server dsentry.armorvalues.boots:0|4|4|4|8|12
+        
+        # a section to start dsentry_task_logic if it is not already running.
+        - define StartLogic true
+        - foreach <queue.list> {
+          - if %value% contains DSENTRY_TASK_LOGIC define StartLogic false
           }
         - if %StartLogic% run dsentry_task_logic delay:10t
         
@@ -502,8 +507,9 @@ dsentry_task_logic:
           }
         }
       }
-    - flag server task_logic_looping duration:10t
-    - run dsentry_task_logic delay:10t
+    # using wait instead of delay, keeps the queue open for detection in 'on reload scripts' event.
+    - wait 10t
+    - run dsentry_task_logic 
 
 # Chooses a nearby target
 dsentry_proc_picktarget:
