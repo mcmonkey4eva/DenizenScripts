@@ -43,8 +43,8 @@ dsentry_world_handler:
         # set some flags for use in armour calculations. (It doesn't matter if they are already set)
         # (each flag holds air|leather|gold|chain|iron|diamond armour damage protection as % reduction)
         - flag server dsentry.armorvalues.helmet:0|4|8|8|8|12
-        - flag server dsentry.armorvalues.chest:0|12|20|20|24|32
-        - flag server dsentry.armorvalues.legs:0|8|12|16|20|24
+        - flag server dsentry.armorvalues.chestplate:0|12|20|20|24|32
+        - flag server dsentry.armorvalues.leggings:0|8|12|16|20|24
         - flag server dsentry.armorvalues.boots:0|4|4|4|8|12
         
         # a section to start dsentry_task_logic if it is not already running.
@@ -647,11 +647,23 @@ dsentry_proc_calculatearmor:
     script:
     # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value (which can just be 0; for no armour)
     - if <npc.flag[dsentry.armor]> >= 0 {
-      -  determine <npc.flag[dsentry.armor]>
+      - determine <npc.flag[dsentry.armor]>
       }
     # TODO: calculate armor based on worn armor <- I have a idea on how to do this one.
     # TODO: Make the default armor = 0 <- Have done this today - Jabel
+    
+    # a line to stop WIP code from running, to be removed when complete.
+    - determine <npc.flag[dsentry.armor]>
 
+    # WIP code starts here.
+    - define TotalArmour 0
+    - foreach helmet|chestplate|leggings|boots {
+      - define equipped <npc.equipment.%value%.replace[_%value%]>
+      - define PosNum <el@val[null|leather|gold|chain|iron|diamond].index_of[%equipped%]>
+      - define TotalArmour <def[TotalArmour].add[<server.flag[desentry.armourvalues.%value%].get[%PosNum%]>]>
+      }
+    - determine <def[TotalArmour]>
+    
 dsentry_proc_calculatedamage:
     type: procedure
     script:
