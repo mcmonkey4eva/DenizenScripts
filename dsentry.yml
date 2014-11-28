@@ -4,8 +4,8 @@
 # |
 # | Sentry rescripted in Denizen!
 #
-# @author mcmonkey  (mcmonkey4eva on github)
-# With help from Jabelpeeps (Jabeltoo on IRC, or sometimes Jabeltoo2...)
+# @author mcmonkey
+# With help from Jabelpeeps
 # @date 2014 / 11 / 26
 # @build 1543
 # @version 6.3
@@ -31,7 +31,7 @@ dsentry_world_handler:
     type: world
     debug: false
     events:
-        on server start:
+        on reload scripts:
         # loads/create yml save file, and starts main logic loop
         - if <server.has_file[dsentry_saves.yml]> {
           - yaml load:dsentry_saves.yml id:dsentry_saves
@@ -47,7 +47,10 @@ dsentry_world_handler:
         - flag server dsentry.armourvalues.leggings:0|8|12|16|20|24
         - flag server dsentry.armourvalues.boots:0|4|4|4|8|12
         
-        # start main logic loop (that gives life to the npc's)
+        # start dsentry_task_logic if it is not already running.
+        - foreach <queue.list> {
+          - if %value% contains DSENTRY_TASK_LOGIC queue clear
+          }
         - run dsentry_task_logic delay:10t
         
         # detects PvP and (if listed in dsentry.eventtargets) adds the aggressor to the target list of dSentries in range.
@@ -109,7 +112,7 @@ dsentry_world_handler:
           - queue clear
           }
         - define arg1 <c.args.get[1].escaped||null>
-        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor|startloop
+        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor
         - if <def[argList].contains[%arg1%]> inject dsentry_command_%arg1%
           else {
           - narrate "<&6>/dSentry create [save-type]"
@@ -125,21 +128,7 @@ dsentry_world_handler:
           - narrate "<&6>/dSentry guard [player/npc-name]"
           - narrate "<&6>/dSentry info"
           }
-
-dsentry_command_startloop:
-    type: task
-    debug: false
-    script:
-    # start dsentry_task_logic if it is not already running.
-    - foreach <queue.list> {
-      - if %value% contains DSENTRY_TASK_LOGIC {
-        - narrate "<&6>dSentry logic loop is already running"
-        - queue clear
-        }
-      }
-    - narrate "<&6>dSentry logic loop started."
-    - run dsentry_task_logic delay:10t
-        
+      
 dsentry_command_info:
     type: task
     debug: false
@@ -147,7 +136,8 @@ dsentry_command_info:
     - narrate "<&6>Your selected NPC <&2>is<&6> a dSentry with stats<&co>"
     - narrate "<&6>Range<&co> <&b><def[mynpc].flag[dsentry.range]>"
     - narrate "<&6>Damage<&co> <&b><def[mynpc].flag[dsentry.damage]>"
-    - narrate "<&6>Armor<&co> <&b><def[mynpc].flag[dsentry.armor].mul[100].as_int>%"
+    - if '<def[mynpc].flag[dsentry.armor]>' >= 0 narrate "<&6>Armor<&co> <&b><def[mynpc].flag[dsentry.armor].mul[100].as_int>% (Static value)"
+      else narrate "<&6>Armor<&co> <&b><proc[dsentry_proc_calculatearmor].mul[100].as_int>% (Calculated value)"
     - narrate "<&6>Walk speed<&co> <&b><def[mynpc].flag[dsentry.walkspeed]>"
     - narrate "<&6>Attack rate<&co> <&b><def[mynpc].flag[dsentry.attackrate]>"
     - if <def[mynpc].flag[dsentry.flagtargets].size||0> == 0 {
@@ -509,17 +499,17 @@ dsentry_task_logic:
     type: task
     debug: false
     script:
-    - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-      - if <def[value].is_spawned> {
-        - run dsentry_task_attack npc:<def[value]> instantly
-        - if <def[value].flag[dsentry.target]||null> == null {
-          - resume waypoints npc:%value%
+    - while true {
+      - wait 10t
+      - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
+        - if <def[value].is_spawned> {
+          - run dsentry_task_attack npc:<def[value]> instantly
+          - if <def[value].flag[dsentry.target]||null> == null {
+            - resume waypoints npc:%value%
+            }
           }
         }
       }
-    # using wait instead of delay, keeps the queue open for detection in 'on reload scripts' event.
-    - wait 10t
-    - run dsentry_task_logic 
 
 # Chooses a nearby target
 dsentry_proc_picktarget:
@@ -655,20 +645,18 @@ dsentry_task_removearrow:
 dsentry_proc_calculatearmor:
     type: procedure
     script:
-    # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value (which can be 0; for no armour)
+    # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value, which is a static % reduction. (0 = no armour)
     - if <npc.flag[dsentry.armor]> >= 0 {
       - determine <npc.flag[dsentry.armor]>
       }
-    # TODO: calculate armor based on worn armor <- I have a idea on how to do this one.
-    # TODO: Make the default armor = 0 <- Have done this today - Jabel
-    
+    # section to calculate % damage reduction according to the material of worn armour.
     - define TotalArmour 0
     - foreach helmet|chestplate|leggings|boots {
       - define equipped <npc.equipment.%value%.material.name>
       - define PosNum <el@val[null|leather|gold|chain|iron|diamond].index_of[%equipped%]>
       - define TotalArmour <def[TotalArmour].add[<server.flag[desentry.armourvalues.%value%].get[%PosNum%]>]>
       }
-    - determine <def[TotalArmour]>
+    - determine <def[TotalArmour].div[100]>
     
 dsentry_proc_calculatedamage:
     type: procedure
