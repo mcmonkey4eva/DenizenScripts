@@ -42,14 +42,14 @@ dsentry_world_handler:
           
         # set some flags for use in armour calculations. 
         # (each flag holds air|leather|gold|chain|iron|diamond armour damage protection as % reduction)
-        - flag server dsentry.Armovalues.helmet:!
-        - flag server dsentry.Armovalues.helmet:|:0|4|8|8|8|12
-        - flag server dsentry.Armovalues.chestplate:!
-        - flag server dsentry.Armovalues.chestplate:|:0|12|20|20|24|32
-        - flag server dsentry.Armovalues.leggings:!
-        - flag server dsentry.Armovalues.leggings:|:0|8|12|16|20|24
-        - flag server dsentry.Armovalues.boots:!
-        - flag server dsentry.Armovalues.boots:|:0|4|4|4|8|12
+        - flag server dsentry.Armourvalues.helmet:!
+        - flag server dsentry.Armourvalues.helmet:|:0|4|8|8|8|12
+        - flag server dsentry.Armourvalues.chestplate:!
+        - flag server dsentry.Armourvalues.chestplate:|:0|12|20|20|24|32
+        - flag server dsentry.Armourvalues.leggings:!
+        - flag server dsentry.Armourvalues.leggings:|:0|8|12|16|20|24
+        - flag server dsentry.Armourvalues.boots:!
+        - flag server dsentry.Armourvalues.boots:|:0|4|4|4|8|12
         
         # start dsentry_task_logic if it is not already running.
         - foreach <queue.list> {
@@ -85,7 +85,7 @@ dsentry_world_handler:
         #on npc damaged by npc:
         #- if <context.entity.as_npc.flag[dsentry.is_dsentry]||false> && <context.damager.as_npc.flag[dsentry.is_dsentry]||false> determine cancelled
         
-        # TODO: calculate NPC armor properly
+        # TODO: calculate NPC armour properly
         #on npc damaged:
         
         # adjusts damage dealt by dSentries to the value in dsentry.damage
@@ -116,7 +116,7 @@ dsentry_world_handler:
           - queue clear
           }
         - define arg1 <c.args.get[1].escaped||null>
-        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor
+        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour
         - if <def[argList].contains[%arg1%]> inject dsentry_command_%arg1%
           else {
           - narrate "<&6>/dSentry create [save-type]"
@@ -126,13 +126,13 @@ dsentry_world_handler:
           - narrate "<&6>/dSentry speed <&lt>speed<&gt>"
           - narrate "<&6>/dSentry damage <&lt>damage<&gt>"
           - narrate "<&6>/dSentry attackrate <&lt>attackrate<&gt>"
-          - narrate "<&6>/dSentry armor <&lt>armor<&gt>"
+          - narrate "<&6>/dSentry armour <&lt>armour<&gt>"
           - narrate "<&6>/dSentry add <&lt>target<&gt>"
           - narrate "<&6>/dSentry remove <&lt>target<&gt>"
           - narrate "<&6>/dSentry guard [player/npc-name]"
           - narrate "<&6>/dSentry info"
           }
-      
+
 dsentry_command_info:
     type: task
     debug: false
@@ -140,10 +140,13 @@ dsentry_command_info:
     - narrate "<&6>Your selected NPC <&2>is<&6> a dSentry with stats<&co>"
     - narrate "<&6>Range<&co> <&b><def[mynpc].flag[dsentry.range]>"
     - narrate "<&6>Damage<&co> <&b><def[mynpc].flag[dsentry.damage]>"
-    - if '<def[mynpc].flag[dsentry.armor]>' >= 0 narrate "<&6>Armor<&co> <&b><def[mynpc].flag[dsentry.armor].mul[100].as_int>% (Static value)"
+    - if '<def[mynpc].flag[dsentry.armour]>' >= 0 {
+      - narrate "<&6>Armour<&co> <&b><def[mynpc].flag[dsentry.armour].mul[100].as_int>% (Static value)"
+      }
       else {
-      - define ArmoCalc <proc[dsentry_proc_calculatearmor]> npc:%mynpc%
-      - narrate "<&6>Armor<&co> <&b><def[ArmoCalc].mul[100].as_int>% (Calculated value)"
+      - define ArmourCalc <proc[dsentry_proc_calculatearmour]> npc:%mynpc%
+      - narrate "<&6>Armour<&co> <&b><def[ArmourCalc].mul[100].as_int>% (Calculated value)"
+      }
     - narrate "<&6>Walk speed<&co> <&b><def[mynpc].flag[dsentry.walkspeed]>"
     - narrate "<&6>Attack rate<&co> <&b><def[mynpc].flag[dsentry.attackrate]>"
     - if <def[mynpc].flag[dsentry.flagtargets].size||0> == 0 {
@@ -355,25 +358,25 @@ dsentry_command_damage:
     - flag %mynpc% dsentry.damage:<context.args.get[2]>
     - narrate "<&6>Damage set."
 
-dsentry_command_armor:
+dsentry_command_armour:
     type: task
     debug: false
     script:
     - if <context.args.get[2].is[==].to[null]||true> {
-      - narrate "<&6>/dSentry armor <&lt>armor<&gt>"
-      - narrate "<&6>Armor = what percentage of damage to take away"
+      - narrate "<&6>/dSentry Armour <&lt>armour<&gt>"
+      - narrate "<&6>Armour = what percentage of damage to take away"
       - queue clear
       }
     - if !<context.args.get[2].is[==].to[<context.args.get[2].escaped>]> {
-      - narrate "<&6>That armor value doesn't look like a proper number."
+      - narrate "<&6>That armour value doesn't look like a proper number."
       - queue clear
       }
     - if !<context.args.get[2].is[matches].to[integer]> {
-      - narrate "<&6>That armor value doesn't look like a proper number."
+      - narrate "<&6>That armour value doesn't look like a proper number."
       - queue clear
       }
-    - flag %mynpc% dsentry.armor:<context.args.get[2].div[100]>
-    - narrate "<&6>Armor set."
+    - flag %mynpc% dsentry.armour:<context.args.get[2].div[100]>
+    - narrate "<&6>Armour set."
 
 dsentry_command_speed:
     type: task
@@ -437,7 +440,7 @@ dsentry_command_save:
     - yaml write:dsentry.<context.args.get[2]>.attackrate value:<def[mynpc].flag[dsentry.attackrate]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.walkspeed value:<def[mynpc].flag[dsentry.walkspeed]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.damage value:<def[mynpc].flag[dsentry.damage]> id:dsentry_saves
-    - yaml write:dsentry.<context.args.get[2]>.armor value:<def[mynpc].flag[dsentry.armor]> id:dsentry_saves
+    - yaml write:dsentry.<context.args.get[2]>.armour value:<def[mynpc].flag[dsentry.armour]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.targets value:<def[mynpc].flag[dsentry.targets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.flagtargets value:<def[mynpc].flag[dsentry.flagtargets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.eventtargets value:<def[mynpc].flag[dsentry.eventtargets].as_list||li@> id:dsentry_saves
@@ -460,7 +463,7 @@ dsentry_command_create:
       - flag %mynpc% dsentry.walkspeed:1
       - flag %mynpc% dsentry.attackrate:30
       - flag %mynpc% dsentry.attackping:0
-      - flag %mynpc% dsentry.armor:-1
+      - flag %mynpc% dsentry.armour:-1
       - flag %mynpc% dsentry.damage:2
       - flag %mynpc% dsentry.targets:!
       - flag %mynpc% dsentry.targets:|:zombie|creeper|spider|skeleton|witch
@@ -490,7 +493,7 @@ dsentry_command_create:
     - flag %mynpc% dsentry.attackrate:<yaml[dsentry_saves].read[%base%attackrate]>
     - flag %mynpc% dsentry.attackping:0
     - flag %mynpc% dsentry.damage:<yaml[dsentry_saves].read[%base%damage]>
-    - flag %mynpc% dsentry.armor:<yaml[dsentry_saves].read[%base%armor]>
+    - flag %mynpc% dsentry.armour:<yaml[dsentry_saves].read[%base%armour]>
     - flag %mynpc% dsentry.targets:!
     - flag %mynpc% dsentry.targets:|:<yaml[dsentry_saves].read[%base%targets]>
     - flag %mynpc% dsentry.flagtargets:!
@@ -648,20 +651,20 @@ dsentry_task_removearrow:
     script:
     - if %hit_entities% == li@ remove %shot_entities%
 
-dsentry_proc_calculatearmor:
+dsentry_proc_calculatearmour:
     type: procedure
     script:
-    # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value, which is a static % reduction. (0 = no armour)
-    - if <npc.flag[dsentry.armor]> >= 0 {
-      - determine <npc.flag[dsentry.armor]>
+    # flag npc armour '-1' to use calculated armour, otherwise, trust the flag value, which is a static % reduction. (0 = no armour)
+    - if <npc.flag[dsentry.armour]> >= 0 {
+      - determine <npc.flag[dsentry.armour]>
       }
     # section to calculate % damage reduction according to the material of worn armour.
-    - define TotalArmo 0
+    - define TotalArmour 0
     - foreach helmet|chestplate|leggings|boots {
       - define PosNum <el@val[air|leather|gold|chain|iron|diamond].as_list.find[<npc.equipment.%value%.material.name.replace[_%value%]||air>]>
-      - define TotalArmo <def[TotalArmo].add[<server.flag[dsentry.Armovalues.%value%].get[%PosNum%]>]>
+      - define TotalArmour <def[TotalArmour].add[<server.flag[dsentry.Armourvalues.%value%].get[%PosNum%]>]>
       }
-    - determine <def[TotalArmo].div[100]>
+    - determine <def[TotalArmour].div[100]>
     
 dsentry_proc_calculatedamage:
     type: procedure
