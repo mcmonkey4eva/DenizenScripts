@@ -460,7 +460,7 @@ dsentry_command_create:
       - flag %mynpc% dsentry.walkspeed:1
       - flag %mynpc% dsentry.attackrate:30
       - flag %mynpc% dsentry.attackping:0
-      - flag %mynpc% dsentry.armor:0
+      - flag %mynpc% dsentry.armor:-1
       - flag %mynpc% dsentry.damage:2
       - flag %mynpc% dsentry.targets:!
       - flag %mynpc% dsentry.targets:|:zombie|creeper|spider|skeleton|witch
