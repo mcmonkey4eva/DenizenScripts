@@ -40,12 +40,16 @@ dsentry_world_handler:
           - yaml create id:dsentry_saves
           }
           
-        # set some flags for use in armour calculations. (It doesn't matter if they are already set)
+        # set some flags for use in armour calculations. 
         # (each flag holds air|leather|gold|chain|iron|diamond armour damage protection as % reduction)
-        - flag server dsentry.armourvalues.helmet:0|4|8|8|8|12
-        - flag server dsentry.armourvalues.chestplate:0|12|20|20|24|32
-        - flag server dsentry.armourvalues.leggings:0|8|12|16|20|24
-        - flag server dsentry.armourvalues.boots:0|4|4|4|8|12
+        - flag server dsentry.Armovalues.helmet:!
+        - flag server dsentry.Armovalues.helmet:|:0|4|8|8|8|12
+        - flag server dsentry.Armovalues.chestplate:!
+        - flag server dsentry.Armovalues.chestplate:|:0|12|20|20|24|32
+        - flag server dsentry.Armovalues.leggings:!
+        - flag server dsentry.Armovalues.leggings:|:0|8|12|16|20|24
+        - flag server dsentry.Armovalues.boots:!
+        - flag server dsentry.Armovalues.boots:|:0|4|4|4|8|12
         
         # start dsentry_task_logic if it is not already running.
         - foreach <queue.list> {
@@ -137,7 +141,9 @@ dsentry_command_info:
     - narrate "<&6>Range<&co> <&b><def[mynpc].flag[dsentry.range]>"
     - narrate "<&6>Damage<&co> <&b><def[mynpc].flag[dsentry.damage]>"
     - if '<def[mynpc].flag[dsentry.armor]>' >= 0 narrate "<&6>Armor<&co> <&b><def[mynpc].flag[dsentry.armor].mul[100].as_int>% (Static value)"
-      else narrate "<&6>Armor<&co> <&b><proc[dsentry_proc_calculatearmor].mul[100].as_int>% (Calculated value)"
+      else {
+      - define ArmoCalc <proc[dsentry_proc_calculatearmor]> npc:%mynpc%
+      - narrate "<&6>Armor<&co> <&b><def[ArmoCalc].mul[100].as_int>% (Calculated value)"
     - narrate "<&6>Walk speed<&co> <&b><def[mynpc].flag[dsentry.walkspeed]>"
     - narrate "<&6>Attack rate<&co> <&b><def[mynpc].flag[dsentry.attackrate]>"
     - if <def[mynpc].flag[dsentry.flagtargets].size||0> == 0 {
@@ -650,13 +656,12 @@ dsentry_proc_calculatearmor:
       - determine <npc.flag[dsentry.armor]>
       }
     # section to calculate % damage reduction according to the material of worn armour.
-    - define TotalArmour 0
+    - define TotalArmo 0
     - foreach helmet|chestplate|leggings|boots {
-      - define equipped <npc.equipment.%value%.material.name>
-      - define PosNum <el@val[null|leather|gold|chain|iron|diamond].index_of[%equipped%]>
-      - define TotalArmour <def[TotalArmour].add[<server.flag[desentry.armourvalues.%value%].get[%PosNum%]>]>
+      - define PosNum <el@val[air|leather|gold|chain|iron|diamond].as_list.find[<npc.equipment.%value%.material.name.replace[_%value%]||air>]>
+      - define TotalArmo <def[TotalArmo].add[<server.flag[dsentry.Armovalues.%value%].get[%PosNum%]>]>
       }
-    - determine <def[TotalArmour].div[100]>
+    - determine <def[TotalArmo].div[100]>
     
 dsentry_proc_calculatedamage:
     type: procedure
