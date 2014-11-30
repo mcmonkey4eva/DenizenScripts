@@ -39,18 +39,7 @@ dsentry_world_handler:
           else {
           - yaml create id:dsentry_saves
           }
-          
-        # set some flags for use in armour calculations. 
-        # (each flag holds air|leather|gold|chain|iron|diamond armour damage protection as % reduction)
-        - flag server dsentry.Armourvalues.helmet:!
-        - flag server dsentry.Armourvalues.helmet:|:0|4|8|8|8|12
-        - flag server dsentry.Armourvalues.chestplate:!
-        - flag server dsentry.Armourvalues.chestplate:|:0|12|20|20|24|32
-        - flag server dsentry.Armourvalues.leggings:!
-        - flag server dsentry.Armourvalues.leggings:|:0|8|12|16|20|24
-        - flag server dsentry.Armourvalues.boots:!
-        - flag server dsentry.Armourvalues.boots:|:0|4|4|4|8|12
-        
+
         # start dsentry_task_logic if it is not already running.
         - foreach <queue.list> {
           - if %value% contains DSENTRY_TASK_LOGIC queue clear
@@ -85,12 +74,16 @@ dsentry_world_handler:
         #on npc damaged by npc:
         #- if <context.entity.as_npc.flag[dsentry.is_dsentry]||false> && <context.damager.as_npc.flag[dsentry.is_dsentry]||false> determine cancelled
         
-        # TODO: calculate NPC armour properly
-        #on npc damaged:
+        # adjusts damage taken by dSentries according to their armour values (either configured or calculated)
+        on npc damaged:
+        - if !<context.entity.has_flag[dsentry.is_dsentry]> queue clear
+        - if 'entity_attack|projectile|thorns|entity_explosion|fire' !contains <context.cause> queue clear
+        - define armour <proc[dsentry_proc_calculatarmour]> npc:<context.entity>
+        - determine <context.damage.mul[%armour%]>
         
         # adjusts damage dealt by dSentries to the value in dsentry.damage
         on npc damages entity:
-        - if !<context.damager.as_npc.has_flag[dsentry.is_dsentry]> queue clear
+        - if !<context.damager.has_flag[dsentry.is_dsentry]> queue clear
         - determine <proc[dsentry_proc_calculatedamage]> npc:<context.damager.as_npc>
         
         # handles the numerous options for the dsentry command.
@@ -658,14 +651,49 @@ dsentry_proc_calculatearmour:
     - if <npc.flag[dsentry.armour]> >= 0 {
       - determine <npc.flag[dsentry.armour]>
       }
+
     # section to calculate % damage reduction according to the material of worn armour.
     - define TotalArmour 0
     - foreach helmet|chestplate|leggings|boots {
-      - define PosNum <el@val[air|leather|gold|chain|iron|diamond].as_list.find[<npc.equipment.%value%.material.name.replace[_%value%]||air>]>
-      - define TotalArmour <def[TotalArmour].add[<server.flag[dsentry.Armourvalues.%value%].get[%PosNum%]>]>
+      - define material <npc.equipment.%value%.material.name.replace[_%value%]||air>
+      - define TotalArmour <def[TotalArmour].add[<s@dsentry_armourvalues.yaml_key[armour.%material%.%value%]>]>
       }
-    - determine <def[TotalArmour].div[100]>
+    - determine <def[TotalArmour]>
     
+dsentry_armourvalues:
+    type: yaml data
+    armour:
+      air:
+        helmet: 0
+        chestplate: 0
+        leggings: 0
+        boots: 0
+      leather:
+        helmet: 0.04
+        chestplate: 0.12
+        leggings: 0.08
+        boots: 0.04
+      gold:
+        helmet: 0.08
+        chestplate: 0.20
+        leggings: 0.12
+        boots: 0.04
+      chain:
+        helmet: 0.08
+        chestplate: 0.20
+        leggings: 0.16
+        boots: 0.04
+      iron:
+        helmet: 0.08
+        chestplate: 0.24
+        leggings: 0.20
+        boots: 0.08
+      diamond:
+        helmet: 0.12
+        chestplate: 0.32
+        leggings: 0.24
+        boots: 0.12
+        
 dsentry_proc_calculatedamage:
     type: procedure
     script:
