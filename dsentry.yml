@@ -78,7 +78,7 @@ dsentry_world_handler:
         on npc damaged:
         - if !<context.entity.has_flag[dsentry.is_dsentry]> queue clear
         - if 'entity_attack|projectile|thorns|entity_explosion|fire' !contains <context.cause> queue clear
-        - define armour <proc[dsentry_proc_calculatarmour]> npc:<context.entity>
+        - define armour <proc[dsentry_proc_calculatearmour]> npc:<context.entity>
         - determine <context.damage.mul[%armour%]>
         
         # adjusts damage dealt by dSentries to the value in dsentry.damage
@@ -92,10 +92,10 @@ dsentry_command:
     debug: false
     name: dsentry
     description: Base command to allow creation and customisation of dSentries.
-    usage: /dsentry (create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour)
+    usage: /dsentry (create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|uncreate)
     permission: dsentry.command
     tab complete:
-    - determine <li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour.filter[starts_with[<context.args.last>]]>
+    - determine <li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|uncreate.filter[starts_with[<context.args.last>]]>
 
     script:
     # defines %mynpc% according to the context.
@@ -613,7 +613,7 @@ dsentry_task_attack:
       }
     # end of guarding specific code
     - if <npc.flag[dsentry.target]||null> == null {
-      - animate <npc> animation:stop_use_item
+      - if <npc.entity_type> == player animate <npc> animation:stop_use_item
       - queue clear
       }
     - if <npc.item_in_hand.material.name> != bow {
@@ -627,10 +627,10 @@ dsentry_task_attack:
       - if <npc.item_in_hand.enchantments||li@> contains ARROW_FIRE {
         - define settings %settings%;fire_time=1m
         }
-      - animate <npc> animation:stop_use_item
+      - if <npc.entity_type> == player animate <npc> animation:stop_use_item
       - shoot arrow[%settings%] origin:<npc> destination:%loc% speed:50 lead:<npc.flag[dsentry.target].as_entity.velocity> script:dsentry_task_removearrow
       - wait 1t
-      - animate <npc> animation:start_use_item
+      - if <npc.entity_type> == player animate <npc> animation:start_use_item
       }
       else if <npc.location.distance[%loc%]> > 3 {
       - walk %loc% speed:<npc.flag[dsentry.walkspeed]>
