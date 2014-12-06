@@ -11,8 +11,7 @@
 # @version 6.3
 #
 # Installation:
-# This script requires a server restart before it will begin running.
-# Alternately, you can use the command: /ex run dsentry_task_logic
+# Just copy this script to your Denizen/scripts folder, and do '/denizen reload scripts'
 #
 # Usage:
 # Create NPCs as normal, and use the /dsentry commands to upgrade them.
@@ -79,13 +78,13 @@ dsentry_world_handler:
         - if !<context.entity.has_flag[dsentry.is_dsentry]> queue clear
         - if 'entity_attack|projectile|thorns|entity_explosion|fire' !contains <context.cause> queue clear
         - define armour <proc[dsentry_proc_calculatearmour]> npc:<context.entity>
-        - determine <context.damage.mul[%armour%]>
+        - determine <context.damage.mul[<def[armour].sub[1].abs>]>
         
         # adjusts damage dealt by dSentries to the value in dsentry.damage
         on npc damages entity:
         - if !<context.damager.has_flag[dsentry.is_dsentry]> queue clear
         - determine <proc[dsentry_proc_calculatedamage]> npc:<context.damager.as_npc>
-
+        
 # handles the numerous options for the dsentry command.
 dsentry_command:
     type: command
@@ -498,8 +497,7 @@ dsentry_command:
       - narrate "<&6>NB the match is case-sensitve"
       - queue clear
       }
-    - foreach <def[mynpc].list_flags[dsentry]> {
-      - flag %mynpc% %value%:!
+    - flag %mynpc% dsentry:!
       }
     - narrate "<&6>dSentry uncreated."
 
@@ -532,6 +530,8 @@ dsentry_proc_picktarget:
           }
         }
       }
+    - define npc <npc>
+    - define targets <npc.flag[dsentry.targets].as_list||li@>
     - if <npc.flag[dsentry.targets].size||0> == 0 {
       - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
       - queue clear
@@ -653,6 +653,7 @@ dsentry_task_removearrow:
 
 dsentry_proc_calculatearmour:
     type: procedure
+    debug: true
     script:
     # flag npc armour '-1' to use calculated armour, otherwise, trust the flag value, which is a static % reduction. (0 = no armour)
     - if <npc.flag[dsentry.armour]> >= 0 {
@@ -702,6 +703,7 @@ dsentry_equipment_values:
         
 dsentry_proc_calculatedamage:
     type: procedure
+    debug: false
     script:
     # flag npc damage '-1' to use calculated damage, otherwise, trust the flag value
     - if <npc.flag[dsentry.damage]> >= 0 {
