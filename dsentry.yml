@@ -98,7 +98,7 @@ dsentry_command_handler:
       }
     - define arg1 <c.args.get[1].escaped||null>
     - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor
-    - if <def[argList].contains[%arg1%]> inject dsentry_command_%arg1%
+    - if <def[argList].contains[%arg1%]> inject locally dsentry_command_%arg1%
       else {
       - narrate "<&6>/dSentry create [save-type]"
       - narrate "<&6>/dSentry save <&lt>save-type<&gt>"
@@ -114,10 +114,7 @@ dsentry_command_handler:
       - narrate "<&6>/dSentry info"
       }
 
-dsentry_command_info:
-    type: task
-    debug: false
-    script:
+    dsentry_command_info:
     - narrate "<&6>Your selected NPC <&2>is<&6> a dSentry with stats<&co>"
     - narrate "<&6>Range<&co> <&b><def[mynpc].flag[dsentry.range]>"
     - narrate "<&6>Damage<&co> <&b><def[mynpc].flag[dsentry.damage]>"
@@ -134,10 +131,7 @@ dsentry_command_info:
     - if <def[mynpc].has_flag[dsentry.follow_target]> {
       - narrate "<&6>Currently Guarding<&co> <&b><def[mynpc].flag[dsentry.follow_target].as_entity.name||null>" 
       }
-dsentry_command_guard:
-    type: task
-    debug: false
-    script:
+    dsentry_command_guard:
     - if <context.args.get[2].is[==].to[guard]||true> {
       - flag %mynpc% dsentry.follow_target:!
       - narrate "<&c>Guarding nothing."
@@ -166,10 +160,7 @@ dsentry_command_guard:
       - queue clear
       }
 
-dsentry_command_add:
-    type: task
-    debug: false
-    script:
+    dsentry_command_add:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry add <&lt>target<&gt>"
       - narrate "<&6>Target = an entity type, EG creeper or pig"
@@ -214,10 +205,7 @@ dsentry_command_add:
     - if <def[mynpc].flag[dsentry.targets].contains[none]> flag %mynpc% dsentry.targets:<-:none
     - narrate "<&6>Added target."
 
-dsentry_command_remove:
-    type: task
-    debug: false
-    script:
+    dsentry_command_remove:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry remove <&lt>target<&gt>"
       - narrate "<&6>Target = an entity type, EG creeper or pig"
@@ -273,10 +261,7 @@ dsentry_command_remove:
     - flag %mynpc% dsentry.targets:<-:<context.args.get[2]>
     - narrate "<&6>Removed target."
 
-dsentry_command_range:
-    type: task
-    debug: false
-    script:
+    dsentry_command_range:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry range <&lt>range<&gt>"
       - narrate "<&6>Range = a number representing how far away (in blocks) the dSentry can attack targets at"
@@ -293,10 +278,7 @@ dsentry_command_range:
     - flag %mynpc% dsentry.range:<context.args.get[2]>
     - narrate "<&6>Range set."
 
-dsentry_command_followrange:
-    type: task
-    debug: false
-    script:
+    dsentry_command_followrange:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry followrange <&lt>range<&gt>"
       - narrate "<&6>Range = a number representing how far away (in blocks) the dSentry can follow players at"
@@ -313,10 +295,7 @@ dsentry_command_followrange:
     - flag %mynpc% dsentry.follow_range:<context.args.get[2]>
     - narrate "<&6>Follow range set."
 
-dsentry_command_damage:
-    type: task
-    debug: false
-    script:
+    dsentry_command_damage:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry damage <&lt>damage<&gt>"
       - narrate "<&6>Damage = a number representing how many hearts of damage the NPC deals when it attacks"
@@ -333,10 +312,7 @@ dsentry_command_damage:
     - flag %mynpc% dsentry.damage:<context.args.get[2]>
     - narrate "<&6>Damage set."
 
-dsentry_command_armor:
-    type: task
-    debug: false
-    script:
+    dsentry_command_armor:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry armor <&lt>armor<&gt>"
       - narrate "<&6>Armor = what percentage of damage to take away"
@@ -353,10 +329,7 @@ dsentry_command_armor:
     - flag %mynpc% dsentry.armor:<context.args.get[2].div[100]>
     - narrate "<&6>Armor set."
 
-dsentry_command_speed:
-    type: task
-    debug: false
-    script:
+    dsentry_command_speed:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry speed <&lt>speed<&gt>"
       - narrate "<&6>Speed = a number representing how fast the NPC should walk while attacking"
@@ -373,10 +346,7 @@ dsentry_command_speed:
     - flag %mynpc% dsentry.walkspeed:<context.args.get[2]>
     - narrate "<&6>Speed set."
 
-dsentry_command_attackrate:
-    type: task
-    debug: false
-    script:
+    dsentry_command_attackrate:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry attackrate <&lt>attackrate<&gt>"
       - narrate "<&6>AttackRate = a number representing how many ticks should pass between an NPC's attacks"
@@ -395,10 +365,7 @@ dsentry_command_attackrate:
     - flag %mynpc% dsentry.attackping:0
     - narrate "<&6>AttackRate set."
 
-dsentry_command_save:
-    type: task
-    debug: false
-    script:
+    dsentry_command_save:
     - if <context.args.get[2].is[==].to[null]||true> {
       - narrate "<&6>/dSentry save <&lt>save-type<&gt>"
       - narrate "<&6>Save-type = a name that can be used to recreate the dSentry with later"
@@ -427,10 +394,7 @@ dsentry_command_save:
     - yaml savefile:dsentry_saves.yml id:dsentry_saves
     - narrate "<&6>dSentry type saved!"
 
-dsentry_command_create:
-    type: task
-    debug: false
-    script:
+    dsentry_command_create:
     - if <context.args.get[2].is[==].to[null]||true> {
       - flag %mynpc% dsentry.range:15
       - flag %mynpc% dsentry.follow_range:3
