@@ -97,7 +97,7 @@ dsentry_command_handler:
       - queue clear
       }
     - define arg1 <c.args.get[1].escaped||null>
-    - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor
+    - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor|health
     - if <def[argList].contains[%arg1%]> inject locally dsentry_command_%arg1%
       else {
       - narrate "<&6>/dSentry create [save-type]"
@@ -107,7 +107,8 @@ dsentry_command_handler:
       - narrate "<&6>/dSentry speed <&lt>speed<&gt>"
       - narrate "<&6>/dSentry damage <&lt>damage<&gt>"
       - narrate "<&6>/dSentry attackrate <&lt>attackrate<&gt>"
-      - narrate "<&6>/dSentry armor <&lt>armor<&gt>"
+      - narrate "<&6>/dSentry health <&lt>max-health-amount<&gt>"
+      - narrate "<&6>/dSentry armor <&lt>armor-rating<&gt>"
       - narrate "<&6>/dSentry add <&lt>target<&gt>"
       - narrate "<&6>/dSentry remove <&lt>target<&gt>"
       - narrate "<&6>/dSentry guard [player-name]"
@@ -118,7 +119,14 @@ dsentry_command_handler:
     - narrate "<&6>Your selected NPC <&2>is<&6> a dSentry with stats<&co>"
     - narrate "<&6>Range<&co> <&b><def[mynpc].flag[dsentry.range]>"
     - narrate "<&6>Damage<&co> <&b><def[mynpc].flag[dsentry.damage]>"
-    - narrate "<&6>Armor<&co> <&b><def[mynpc].flag[dsentry.armor].mul[100].as_int>%"
+    - narrate "<&6>Health<&co> <&b><npc.health><&f>/<&b><def[mynpc].flag[dsentry.health]>"
+    - if <def[mynpc].flag[dsentry.armor]> == 0 {
+      - define armor <proc[dsentry_proc_calculatearmor]>
+      - narrate "<&6>Armor Rating<&co> <&b><def[armor].mul[100].as_int>% (Calculated)"
+      }
+      else {
+      - narrate "<&6>Armor Rating<&co> <&b><def[mynpc].flag[dsentry.armor].mul[100].as_int>% (User Defined)"
+      }
     - narrate "<&6>Walk speed<&co> <&b><def[mynpc].flag[dsentry.walkspeed]>"
     - narrate "<&6>Attack rate<&co> <&b><def[mynpc].flag[dsentry.attackrate]>"
     - if <def[mynpc].flag[dsentry.flagtargets].size||0> == 0 {
@@ -322,12 +330,28 @@ dsentry_command_handler:
       - narrate "<&6>That armor value doesn't look like a proper number."
       - queue clear
       }
-    - if !<context.args.get[2].is[matches].to[integer]> {
+    - if !<context.args.get[2].is[matches].to[decimal]> {
       - narrate "<&6>That armor value doesn't look like a proper number."
       - queue clear
       }
     - flag %mynpc% dsentry.armor:<context.args.get[2].div[100]>
     - narrate "<&6>Armor set."
+
+    dsentry_command_health:
+    - if <context.args.get[2].is[==].to[null]||true> {
+      - narrate "<&6>/dSentry health <&lt>max-health-amount<&gt>"
+      - queue clear
+      }
+    - if !<context.args.get[2].is[==].to[<context.args.get[2].escaped>]> {
+      - narrate "<&6>That health value doesn't look like a proper number."
+      - queue clear
+      }
+    - if !<context.args.get[2].is[matches].to[decimal]> {
+      - narrate "<&6>That health value doesn't look like a proper number."
+      - queue clear
+      }
+    - flag %mynpc% dsentry.health:<context.args.get[2].div[100]>
+    - narrate "<&6>Health set."
 
     dsentry_command_speed:
     - if <context.args.get[2].is[==].to[null]||true> {
@@ -383,6 +407,7 @@ dsentry_command_handler:
     - yaml write:dsentry.<context.args.get[2]>.walkspeed value:<def[mynpc].flag[dsentry.walkspeed]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.damage value:<def[mynpc].flag[dsentry.damage]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.armor value:<def[mynpc].flag[dsentry.armor]> id:dsentry_saves
+    - yaml write:dsentry.<context.args.get[2]>.health value:<def[mynpc].flag[dsentry.health]> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.targets value:<def[mynpc].flag[dsentry.targets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.flagtargets value:<def[mynpc].flag[dsentry.flagtargets].as_list||li@> id:dsentry_saves
     - yaml write:dsentry.<context.args.get[2]>.eventtargets value:<def[mynpc].flag[dsentry.eventtargets].as_list||li@> id:dsentry_saves
@@ -402,6 +427,8 @@ dsentry_command_handler:
       - flag %mynpc% dsentry.walkspeed:1
       - flag %mynpc% dsentry.attackrate:30
       - flag %mynpc% dsentry.attackping:0
+      - flag %mynpc% dsentry.armor:0
+      - flag %mynpc% dsentry.health:20
       - flag %mynpc% dsentry.damage:2
       - flag %mynpc% dsentry.targets:!
       - flag %mynpc% dsentry.targets:|:zombie|creeper|spider|skeleton|witch
@@ -432,6 +459,7 @@ dsentry_command_handler:
     - flag %mynpc% dsentry.attackping:0
     - flag %mynpc% dsentry.damage:<yaml[dsentry_saves].read[%base%damage]>
     - flag %mynpc% dsentry.armor:<yaml[dsentry_saves].read[%base%armor]>
+    - flag %mynpc% dsentry.health:<yaml[dsentry_saves].read[%base%health]>
     - flag %mynpc% dsentry.targets:!
     - flag %mynpc% dsentry.targets:|:<yaml[dsentry_saves].read[%base%targets]>
     - flag %mynpc% dsentry.flagtargets:!
