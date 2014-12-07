@@ -25,6 +25,41 @@
 #
 # ---------------------------- END HEADER ----------------------------
 
+dsentry_equipment_values:
+    type: yaml data
+    armor:
+      air:
+        helmet: 0
+        chestplate: 0
+        leggings: 0
+        boots: 0
+        air: 0
+      leather:
+        helmet: 0.04
+        chestplate: 0.12
+        leggings: 0.08
+        boots: 0.04
+      gold:
+        helmet: 0.08
+        chestplate: 0.20
+        leggings: 0.12
+        boots: 0.04
+      chainmail:
+        helmet: 0.08
+        chestplate: 0.20
+        leggings: 0.16
+        boots: 0.04
+      iron:
+        helmet: 0.08
+        chestplate: 0.24
+        leggings: 0.20
+        boots: 0.08
+      diamond:
+        helmet: 0.12
+        chestplate: 0.32
+        leggings: 0.24
+        boots: 0.12
+
 dsentry_world_handler:
     type: world
     debug: false
@@ -427,7 +462,7 @@ dsentry_command_handler:
       - flag %mynpc% dsentry.walkspeed:1
       - flag %mynpc% dsentry.attackrate:30
       - flag %mynpc% dsentry.attackping:0
-      - flag %mynpc% dsentry.armor:0
+      - flag %mynpc% dsentry.armor:-1
       - flag %mynpc% dsentry.health:20
       - flag %mynpc% dsentry.damage:2
       - flag %mynpc% dsentry.targets:!
@@ -622,8 +657,12 @@ dsentry_proc_calculatearmor:
     - if <npc.flag[dsentry.armor]> >= 0 {
       -  determine <npc.flag[dsentry.armor]>
       }
-    # TODO: calculate armor based on worn armor
-    # TODO: Make the default damage -1
+    - define total 0
+    - foreach helmet|chestplate|leggings|boots {
+      - define material <npc.equipment.%value%.material.name.replace[_%value%]||air>
+      - define total <def[total].add[<s@dsentry_equipment_values.yaml_key[armor.%material%.%value%]>]>
+      }
+    - determine <def[total]>
 
 dsentry_proc_calculatedamage:
     type: procedure
