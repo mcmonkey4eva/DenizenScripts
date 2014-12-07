@@ -91,10 +91,10 @@ dsentry_command:
     debug: false
     name: dsentry
     description: Base command to allow creation and customisation of dSentries.
-    usage: /dsentry (create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|uncreate)
+    usage: /dsentry (create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|disable)
     permission: dsentry.command
     tab complete:
-    - determine <li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|uncreate.filter[starts_with[<context.args.last>]]>
+    - determine <li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|disable.filter[starts_with[<context.args.last>]]>
 
     script:
     # defines %mynpc% according to the context.
@@ -116,7 +116,7 @@ dsentry_command:
           }
     # runs appropriate script for each sub-command, or if no-recognised sub-command is given, narrates a list of them.
         - define arg1 <c.args.get[1].escaped||null>
-        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|uncreate
+        - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armour|disable
         - if <def[argList].contains[%arg1%]> inject locally dsentry_command_%arg1%
           else {
           - narrate "<&6>/dSentry info"
@@ -131,7 +131,7 @@ dsentry_command:
           - narrate "<&6>/dSentry add <&lt>target<&gt>"
           - narrate "<&6>/dSentry remove <&lt>target<&gt>"
           - narrate "<&6>/dSentry guard [player/npc-name]"
-          - narrate "<&6>/dSentry uncreate <&lt>npc-name<&gt>"          
+          - narrate "<&6>/dSentry disable <&lt>npc-name<&gt>"          
           - narrate "<&6>Do a sub-command without arguments for further help"
           }
 
@@ -483,10 +483,10 @@ dsentry_command:
     - flag %mynpc% dsentry.is_dsentry
     - narrate "<&6>NPC turned into a custom dSentry."
 
-  # Uncreate command - removes all dsentry flags from an npc; converting it back to a standard npc.
-    dsentry_command_uncreate:
+  # disable command - removes all dsentry flags from an npc; converting it back to a standard npc.
+    dsentry_command_disable:
     - if <context.args.get[2].is[==].to[null]||true> {
-      - narrate "<&6>/dSentry uncreate<&lt>target<&gt>"
+      - narrate "<&6>/dSentry disable<&lt>target<&gt>"
       - narrate "<&6>Removes all dSentry attributes from selected NPC"
       - narrate "<&6>For safety, you must have the NPC selected, "
       - narrate "<&6>AND enter their name as 2nd argument."
@@ -494,12 +494,12 @@ dsentry_command:
       }
     - if !<def[mynpc].name.equals_with_case[<context.args.get[2]>]> {
       - narrate "<&6>The supplied name does not match the selected NPC"
-      - narrate "<&6>NB the match is case-sensitve"
+      - narrate "<&6>NOTE: the match is case-sensitve"
       - queue clear
       }
     - flag %mynpc% dsentry:!
       }
-    - narrate "<&6>dSentry uncreated."
+    - narrate "<&6>dSentry disabled on selected NPC."
 
 # Runs repeatedly as the dSentry logic loop
 dsentry_task_logic:
@@ -530,8 +530,6 @@ dsentry_proc_picktarget:
           }
         }
       }
-    - define npc <npc>
-    - define targets <npc.flag[dsentry.targets].as_list||li@>
     - if <npc.flag[dsentry.targets].size||0> == 0 {
       - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
       - queue clear
@@ -653,7 +651,7 @@ dsentry_task_removearrow:
 
 dsentry_proc_calculatearmour:
     type: procedure
-    debug: true
+    debug: false
     script:
     # flag npc armour '-1' to use calculated armour, otherwise, trust the flag value, which is a static % reduction. (0 = no armour)
     - if <npc.flag[dsentry.armour]> >= 0 {
