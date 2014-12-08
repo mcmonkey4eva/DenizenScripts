@@ -81,6 +81,12 @@ dsentry_world_handler:
           }
         - wait 5s
         - run dsentry_task_logic delay:10t
+        - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
+          - if <def[value].is_spawned]> {
+            - vulnerable npc:%value%
+            - health <def[value].flag[dsentry.health]> npc:%value%
+            }
+          }
 
         on npc spawns:
         - if !<npc.has_flag[dsentry.is_dsentry]> queue clear
