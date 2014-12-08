@@ -64,8 +64,10 @@ dsentry_world_handler:
     type: world
     debug: false
     events:
+        on server start:
+        - inject locally "events.on reload scripts"
         on reload scripts:
-        - if <yaml[dsentry_saves]||null> == null {
+        - if <yaml.list> !contains dsentry_saves {
           - if <server.has_file[dsentry_saves.yml]> {
             - yaml load:dsentry_saves.yml id:dsentry_saves
             }
@@ -73,10 +75,12 @@ dsentry_world_handler:
             - yaml create id:dsentry_saves
             }
           }
-        - if <queue.exists[dsentry_logic_queue]> {
-          - queue q@dsentry_logic_queue stop
+        - define queues <queue.list.filter[starts_with[dsentry_task_logic]]>
+        - foreach %queues% {
+          - queue %value% stop
           }
-        - run dsentry_task_logic delay:10t queue:dsentry_logic_queue
+        - wait 5s
+        - run dsentry_task_logic delay:10t
 
         on npc spawns:
         - if !<npc.has_flag[dsentry.is_dsentry]> queue clear
@@ -131,7 +135,6 @@ dsentry_command_handler:
     usage: /dsentry help
     permission: dsentry.command
     script:
-    - determine passively fulfilled
     - if <context.server> {
       - define mynpc <server.selected_npc>
       }
@@ -533,7 +536,7 @@ dsentry_task_logic:
             }
           }
         }
-        - wait 10
+      - wait 10t
       }
 
 # Chooses a nearby target
@@ -544,7 +547,9 @@ dsentry_proc_picktarget:
     - if <npc.flag[dsentry.target]||null> != null {
       - if <npc.flag[dsentry.target].as_entity.is_spawned||false> {
         - if <npc.location.distance[<npc.flag[dsentry.target].as_entity.location>]> < <npc.flag[dsentry.range]> {
-          - determine <npc.flag[dsentry.target]>
+          - if <npc.can_see[<npc.flag[dsentry.target]>]> {
+            - determine <npc.flag[dsentry.target]>
+            }
           }
         }
       }
