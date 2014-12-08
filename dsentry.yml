@@ -64,14 +64,19 @@ dsentry_world_handler:
     type: world
     debug: false
     events:
-        on server start:
-        - if <server.has_file[dsentry_saves.yml]> {
-          - yaml load:dsentry_saves.yml id:dsentry_saves
+        on reload scripts:
+        - if <yaml[dsentry_saves]||null> == null {
+          - if <server.has_file[dsentry_saves.yml]> {
+            - yaml load:dsentry_saves.yml id:dsentry_saves
+            }
+            else {
+            - yaml create id:dsentry_saves
+            }
           }
-          else {
-          - yaml create id:dsentry_saves
+        - if <queue.exists[dsentry_logic_queue]> {
+          - queue q@dsentry_logic_queue stop
           }
-        - run dsentry_task_logic delay:10t
+        - run dsentry_task_logic delay:10t queue:dsentry_logic_queue
 
         on npc spawns:
         - if !<npc.has_flag[dsentry.is_dsentry]> queue clear
@@ -519,15 +524,17 @@ dsentry_task_logic:
     type: task
     debug: false
     script:
-    - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-      - if <def[value].is_spawned> {
-        - run dsentry_task_attack npc:<def[value]> instantly
-        - if <def[value].flag[dsentry.target]||null> == null {
-          - resume waypoints npc:%value%
+    - while true {
+      - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
+        - if <def[value].is_spawned> {
+          - run dsentry_task_attack npc:<def[value]> instantly
+          - if <def[value].flag[dsentry.target]||null> == null {
+            - resume waypoints npc:%value%
+            }
           }
         }
+        - wait 10
       }
-    - run dsentry_task_logic delay:10t
 
 # Chooses a nearby target
 dsentry_proc_picktarget:
@@ -681,7 +688,7 @@ dsentry_proc_calculatedamage:
     script:
     # flag npc damage '-1' to use calculated damage, otherwise, trust the flag value
     - if <npc.flag[dsentry.damage]> >= 0 {
-      - determine <npc.flag[dsentry].damage]>
+      - determine <npc.flag[dsentry.damage]>
       }
     # TODO: calculate damage based on held item
     # TODO: Make the default damage -1
