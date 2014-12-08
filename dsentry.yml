@@ -113,6 +113,7 @@ dsentry_world_handler:
 dsentry_command_handler:
     type: command
     name: dsentry
+    debug: false
     aliases:
     - ds
     description: Control Denizen-powered guard NPCs.
@@ -158,7 +159,7 @@ dsentry_command_handler:
     - narrate "<&6>Range<&co> <&b><def[mynpc].flag[dsentry.range]>"
     - narrate "<&6>Damage<&co> <&b><def[mynpc].flag[dsentry.damage]>"
     - narrate "<&6>Health<&co> <&b><npc.health><&f>/<&b><def[mynpc].flag[dsentry.health]>"
-    - if <def[mynpc].flag[dsentry.armor]> == 0 {
+    - if <def[mynpc].flag[dsentry.armor]> == -1 {
       - define armor <proc[dsentry_proc_calculatearmor]>
       - narrate "<&6>Armor Rating<&co> <&b><def[armor].mul[100].as_int>% (Calculated)"
       }
@@ -615,7 +616,7 @@ dsentry_task_attack:
       }
     # end of guarding specific code
     - if <npc.flag[dsentry.target]||null> == null {
-      - animate <npc> animation:stop_use_item
+      - if <npc.entity_type> == player animate <npc> animation:stop_use_item
       - queue clear
       }
     - if <npc.item_in_hand.material.name> != bow {
@@ -629,10 +630,10 @@ dsentry_task_attack:
       - if <npc.item_in_hand.enchantments||li@> contains ARROW_FIRE {
         - define settings %settings%;fire_time=1m
         }
-      - animate <npc> animation:stop_use_item
+      - if <npc.entity_type> == player <npc> animation:stop_use_item
       - shoot arrow[%settings%] origin:<npc> destination:%loc% speed:50 lead:<npc.flag[dsentry.target].as_entity.velocity> script:dsentry_task_removearrow
       - wait 1t
-      - animate <npc> animation:start_use_item
+      - if <npc.entity_type> == player animate <npc> animation:start_use_item
       }
       else if <npc.location.distance[%loc%]> > 3 {
       - walk %loc% speed:<npc.flag[dsentry.walkspeed]>
@@ -655,6 +656,7 @@ dsentry_task_removearrow:
 
 dsentry_proc_calculatearmor:
     type: procedure
+    debug: false
     script:
     # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value
     - if <npc.flag[dsentry.armor]> >= 0 {
@@ -669,6 +671,7 @@ dsentry_proc_calculatearmor:
 
 dsentry_proc_calculatedamage:
     type: procedure
+    debug: false
     script:
     # flag npc damage '-1' to use calculated damage, otherwise, trust the flag value
     - if <npc.flag[dsentry.damage]> >= 0 {
