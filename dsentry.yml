@@ -6,12 +6,11 @@
 #
 # @author mcmonkey
 # @date 2014 / 12 / 07
-# @build 1543
-# @version 6.3
+# @build 1546
+# @version 7.0
 #
 # Installation:
-# This script requires a server restart before it will begin running.
-# Alternately, you can use the command: /ex run dsentry_task_logic
+# Just copy the script to your scripts folder and /denizen reload scripts
 #
 # Usage:
 # Create NPCs as normal, and use the /dsentry commands to upgrade them.
