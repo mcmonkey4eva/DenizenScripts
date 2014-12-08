@@ -101,7 +101,10 @@ dsentry_world_handler:
         #- if <context.entity.as_npc.flag[dsentry.is_dsentry]||false> && <context.damager.as_npc.flag[dsentry.is_dsentry]||false> determine cancelled
 
         # TODO: calculate NPC armor properly
-        #on npc damaged:
+        on npc damaged:
+        - if !<context.entity.has_flag[dsentry.is_dsentry]> queue clear
+        - define armor <proc[dsentry_proc_calculatearmor]> npc:<context.entity>
+        - determine <el@val[1].sub[%armor%].mul[<context.damage>]>
 
         on npc damages entity:
         - if !<context.damager.as_npc.has_flag[dsentry.is_dsentry]> queue clear
