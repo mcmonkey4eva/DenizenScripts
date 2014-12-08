@@ -73,6 +73,12 @@ dsentry_world_handler:
           }
         - run dsentry_task_logic delay:10t
 
+        on npc spawns:
+        - if !<npc.has_flag[dsentry.is_dsentry]> queue clear
+        - vulnerable
+        - health <npc.flag[dsentry.health]>
+        - heal <npc>
+
         on player damaged by player:
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null 
