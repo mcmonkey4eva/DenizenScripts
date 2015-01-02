@@ -49,4 +49,6 @@ dessentials_command_item:
       - narrate "<&c>Unknown item."
       - queue clear
       }
+    - adjust <def[item]> quantity:1 save:myitem
+    - narrate "<&2>Giving <&b><def[item].qty><&2> of <&b><entry[myitem].result><&2>."
     - give <def[item]>
