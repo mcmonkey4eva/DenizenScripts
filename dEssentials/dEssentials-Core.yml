@@ -21,22 +21,22 @@
 # Use similarly to essentials.
 #
 # Commands/Permissions:
-# /name     -> short description         -> permission
-# ---------------------- Core        ---------------------------------------
-# ---------------------- Teleporting ---------------------------------------
+# /name     -> short description            -> permission
+# ---------------------- Core        -------------------------------------------
+# ---------------------- Teleporting -------------------------------------------
 # /spawn    -> warp to the world spawn      -> denizen.essentials.user.spawn
 # /setspawn -> set the world spawn point    -> denizen.essentials.admin.setspawn
 # /warp     -> warp to a teleport point     -> denizen.essentials.user.warp
 # /setwarp  -> set a teleport point         -> denizen.essentials.admin.setwarp
-# ---------------------- Items       ----------------------------------------
+# ---------------------- Items       -------------------------------------------
 # /itemdb   -> shows information on an item -> denizen.essentials.user.itemdb
 # /item     -> gives an item to the player  -> denizen.essentials.admin.item
 # /invsee   -> shows a player's inventory   -> denizen.essentials.admin.invsee
 # /endersee -> shows a player's enderchest  -> denizen.essentials.admin.endersee
-# ---------------------- Control     ----------------------------------------
+# ---------------------- Control     -------------------------------------------
 # /time     -> sets the world's time        -> denizen.essentials.admin.time
 #
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 placeholder:
     type: yaml data
