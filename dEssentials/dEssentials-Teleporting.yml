@@ -9,9 +9,9 @@ dessentials_command_spawn:
     permission: denizen.essentials.user.spawn
     script:
     - if <context.server> {
-     - narrate "<&c>This command is for players only."
-     - queue clear
-     }
+      - narrate "<&c>This command is for players only."
+      - queue clear
+      }
     - teleport <player> <player.world.spawn_location>
 
 dessentials_command_setspawn:
@@ -23,9 +23,9 @@ dessentials_command_setspawn:
     permission: denizen.essentials.admin.setspawn
     script:
     - if <context.server> {
-     - narrate "<&c>This command is for players only."
-     - queue clear
-     }
+      - narrate "<&c>This command is for players only."
+      - queue clear
+      }
     - adjust <player.world> spawn_location:<player.location>
 
 dessentials_command_setwarp:
