@@ -31,6 +31,8 @@
 # ---------------------- Items       ----------------------------------------
 # /itemdb   -> shows information on an item -> denizen.essentials.user.itemdb
 # /item     -> gives an item to the player  -> denizen.essentials.admin.item
+# /invsee   -> shows a player's inventory   -> denizen.essentials.admin.invsee
+# /endersee -> shows a player's enderchest  -> denizen.essentials.admin.endersee
 # ---------------------- Control     ----------------------------------------
 # /time     -> sets the world's time        -> denizen.essentials.admin.time
 #

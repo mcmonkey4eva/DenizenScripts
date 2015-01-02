@@ -54,3 +54,25 @@ dessentials_command_item:
     - adjust <def[item]> quantity:1 save:myitem
     - narrate "<&2>Giving <&b><def[item].qty><&2> of <&b><entry[myitem].result><&2>."
     - give <def[item]>
+
+dessentials_command_invsee:
+    type: command
+    debug: false
+    name: invsee
+    description: Shows the inventory of another player.
+    usage: /invess <&lt>player<&gt>
+    permission: denizen.essentials.admin.invsee
+    script:
+    # TODO
+    - narrate "This command is a stub."
+
+dessentials_command_endersee:
+    type: command
+    debug: false
+    name: endersee
+    description: Shows the enderchest of another player.
+    usage: /endersee <&lt>player<&gt>
+    permission: denizen.essentials.admin.endersee
+    script:
+    # TODO
+    - narrate "This command is a stub."
