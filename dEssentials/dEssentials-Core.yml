@@ -22,12 +22,14 @@
 #
 # Commands/Permissions:
 # /name     -> short description         -> permission
-# ---------------------- Core       ---------------------------------------
+# ---------------------- Core        ---------------------------------------
 # ---------------------- Teleporting ---------------------------------------
-# /spawn    -> warp to the world spawn   -> denizen.essentials.user.spawn
-# /setspawn -> set the world spawn point -> denizen.essentials.admin.setspawn
-# /warp     -> warp to a teleport point  -> denizen.essentials.user.warp
-# /setwarp  -> set a teleport point      -> denizen.essentials.admin.setwarp
+# /spawn    -> warp to the world spawn      -> denizen.essentials.user.spawn
+# /setspawn -> set the world spawn point    -> denizen.essentials.admin.setspawn
+# /warp     -> warp to a teleport point     -> denizen.essentials.user.warp
+# /setwarp  -> set a teleport point         -> denizen.essentials.admin.setwarp
+# ---------------------- Items       ----------------------------------------
+# /itemdb   -> shows information on an item -> denizen.essentials.user.itemdb
 #
 # ---------------------------------------------------------------------------
 

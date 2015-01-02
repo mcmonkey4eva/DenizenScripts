@@ -1,0 +1,27 @@
+# See dEssentials-Core.yml for information
+
+essentials_command_itemdb:
+    type: command
+    debug: false
+    name: itemdb
+    description: Shows information on the held item, or a specified item.
+    usage: /itemdb [item]
+    permission: denizen.essentials.user.itemdb
+    script:
+    - if <context.server> && <context.args.size> != 1 {
+     - narrate "<&c>This command is for players only."
+     - narrate "<&c>Available for the server<&co> /itemdb <&lt>item<&gt>"
+     - queue clear
+     }
+    - define item <player.item_in_hand>
+    - if <context.args.size> == 1 {
+      - define item i@<context.args.get[1]>
+      }
+    - if <def[item].is[==].to[null]> || <def[item].material.name||null> == null {
+      - narrate "<&c>Unknown item."
+      - queue clear
+      }
+    - narrate "<&6>Item<&co> <&b><def[item].material.name>"
+    - narrate "<&6>Internal Name<&co> <&b><def[item].material.bukkit_enum>"
+    - narrate "<&6>Full Denizen descriptor<&co> <&b><def[item]>"
+    - narrate "<&6>Data values<&co> <&b><def[item].id><&f><&co><&b><def[item].data>"
