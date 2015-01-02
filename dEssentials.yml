@@ -1,3 +1,28 @@
+# |------------------------------------
+# | D E N I Z E N   E S S E N T I A L S
+# |
+# | Essentials rewritten in Denizen!
+# | -----------------------------------
+#
+# @author mcmonkey
+# @version 0.1
+# @denizen-version 0.9.6
+# @denizen-build 1551
+# @date 2015-01-01
+#
+# Installation:
+# Just drop it in your scripts folder and reload :D
+#
+# Usage:
+# Use similarly to essentials.
+#
+# Commands/Permissions:
+# /name     -> short description         -> permission
+# /spawn    -> warp to the world spawn   -> denizen.essentials.user.spawn
+# /setspawn -> set the world spawn point -> denizen.essentials.admin.setspawn
+#
+# ---------------------------------------------------------------------------
+
 essentials_command_spawn:
     type: command
     debug: false
@@ -18,7 +43,7 @@ essentials_command_setspawn:
     name: setspawn
     description: Sets the current world's spawn point to your location.
     usage: /setspawn
-    permission: denizen.essentials.user.setspawn
+    permission: denizen.essentials.admin.setspawn
     script:
     - if <context.server> {
      - narrate "<&c>This command is for players only."
