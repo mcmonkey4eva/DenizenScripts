@@ -23,3 +23,6 @@
 # /setspawn -> set the world spawn point -> denizen.essentials.admin.setspawn
 #
 # ---------------------------------------------------------------------------
+
+placeholder:
+    type: yaml data
