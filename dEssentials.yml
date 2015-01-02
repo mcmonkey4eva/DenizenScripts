@@ -1,0 +1,27 @@
+essentials_command_spawn:
+    type: command
+    debug: false
+    name: spawn
+    description: Teleports you to the current world's spawn point.
+    usage: /spawn
+    permission: denizen.essentials.user.spawn
+    script:
+    - if <context.server> {
+     - narrate "<&c>This command is for players only."
+     - queue clear
+     }
+    - teleport <player> <player.world.spawn_location>
+
+essentials_command_setspawn:
+    type: command
+    debug: false
+    name: setspawn
+    description: Sets the current world's spawn point to your location.
+    usage: /setspawn
+    permission: denizen.essentials.user.setspawn
+    script:
+    - if <context.server> {
+     - narrate "<&c>This command is for players only."
+     - queue clear
+     }
+    - adjust <player.world> spawn_location:<player.location>
