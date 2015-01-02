@@ -30,6 +30,9 @@
 # /setwarp  -> set a teleport point         -> denizen.essentials.admin.setwarp
 # ---------------------- Items       ----------------------------------------
 # /itemdb   -> shows information on an item -> denizen.essentials.user.itemdb
+# /item     -> gives an item to the player  -> denizen.essentials.admin.item
+# ---------------------- Control     ----------------------------------------
+# /time     -> sets the world's time        -> denizen.essentials.admin.time
 #
 # ---------------------------------------------------------------------------
 
