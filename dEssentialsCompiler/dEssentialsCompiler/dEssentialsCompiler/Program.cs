@@ -10,6 +10,7 @@ namespace dEssentialsCompiler
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("mcmonkey's Denizen Script Compiler");
             string name = File.ReadAllText("compiler.txt").Replace("\r", "").Replace("\n", "");
             string[] files = Directory.GetFiles(Environment.CurrentDirectory, "*.yml");
             StringBuilder complete = new StringBuilder();
