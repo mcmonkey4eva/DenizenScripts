@@ -17,6 +17,11 @@ dessentials_command_time:
       }
     - if <context.args.size> == 0 {
       - narrate "<&c>/time <&lt>time<&gt> [world]"
+      - define hour <player.world.time.div[1000].add[6].round>
+      - if <def[hour]> >= 24 {
+        - define hour <def[hour].sub[24]>
+        }
+      - narrate "<&2>Time in <&b><player.world.name><&2> is <&b><player.world.time>ticks<&2> (<&b><def[hour]> o' clock<&2>)."
       - queue clear
       }
     - define world <player.world>
@@ -41,7 +46,7 @@ dessentials_command_time:
       - adjust <def[world]> time:13000
       }
       else if <def[time].contains[<&co>]> {
-      - adjust <def[world]> time:<def[time].sub[6].before[<&co>].mul[1000].add[<def[time].after[<&co>].mul[16.666]>]>
+      - adjust <def[world]> time:<def[time].before[<&co>].sub[6].mul[1000].add[<def[time].after[<&co>].mul[16.666]>]>
       }
       else if <def[time].ends_with[ticks]> {
       - adjust <def[world]> time:<def[time].before[ticks]>
@@ -49,4 +54,8 @@ dessentials_command_time:
       else {
       - adjust <def[world]> time:<def[time].sub[6].mul[1000]>
       }
-    - narrate "<&2>Set time in <&b><def[world].name><&2> to <&b><def[world].time>ticks<&2>."
+    - define hour <player.world.time.div[1000].add[6].round>
+    - if <def[hour]> >= 24 {
+      - define hour <def[hour].sub[24]>
+      }
+    - narrate "<&2>Set time in <&b><def[world].name><&2> to <&b><def[world].time>ticks<&2> (<&b><def[hour]> o' clock<&2>)."
