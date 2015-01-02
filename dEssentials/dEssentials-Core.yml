@@ -10,6 +10,10 @@
 # @denizen-build 1551
 # @date 2015-01-01
 #
+# @recommended dWorldEditor
+# @recommended dRegions
+# @recommended dSentry
+#
 # Installation:
 # Just drop it in your scripts folder and reload :D
 #
