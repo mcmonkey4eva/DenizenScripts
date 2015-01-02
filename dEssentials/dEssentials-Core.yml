@@ -22,8 +22,8 @@
 # Use similarly to essentials.
 #
 # Ignoring:
-# We are not replacing /xp, /weather, /give ...
-# because minecraft provides sufficient default commands.
+# We are not replacing /xp, /weather, /give ... at this time
+# because Minecraft provides sufficient default commands.
 #
 # Commands/Permissions:
 # /name     -> short description            -> permission
@@ -45,3 +45,5 @@
 
 placeholder:
     type: yaml data
+    description: This is here so the YAML file doesn't show an error for being empty.
+                 This file will eventually be used for 'core' commands, if any are chosen.
