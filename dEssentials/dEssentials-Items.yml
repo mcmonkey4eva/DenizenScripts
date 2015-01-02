@@ -1,6 +1,6 @@
 # See dEssentials-Core.yml for information
 
-essentials_command_itemdb:
+dessentials_command_itemdb:
     type: command
     debug: false
     name: itemdb
@@ -25,3 +25,5 @@ essentials_command_itemdb:
     - narrate "<&6>Internal Name<&co> <&b><def[item].material.bukkit_enum>"
     - narrate "<&6>Full Denizen descriptor<&co> <&b><def[item]>"
     - narrate "<&6>Data values<&co> <&b><def[item].id><&f><&co><&b><def[item].data>"
+
+dessentials_command_

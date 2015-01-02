@@ -1,6 +1,6 @@
 # See dEssentials-Core.yml for information
 
-essentials_command_spawn:
+dessentials_command_spawn:
     type: command
     debug: false
     name: spawn
@@ -14,7 +14,7 @@ essentials_command_spawn:
      }
     - teleport <player> <player.world.spawn_location>
 
-essentials_command_setspawn:
+dessentials_command_setspawn:
     type: command
     debug: false
     name: setspawn
@@ -28,7 +28,7 @@ essentials_command_setspawn:
      }
     - adjust <player.world> spawn_location:<player.location>
 
-essentials_command_setwarp:
+dessentials_command_setwarp:
     type: command
     debug: false
     name: setwarp
@@ -55,7 +55,7 @@ essentials_command_setwarp:
     - flag server dessentials.warps.<context.args.get[1]>:<player.location>
     - narrate "<&2>Set warp <&b><context.args.get[1]><&2> at <&b><player.location.simple><&2>!"
 
-essentials_command_warp:
+dessentials_command_warp:
     type: command
     debug: false
     name: warp
