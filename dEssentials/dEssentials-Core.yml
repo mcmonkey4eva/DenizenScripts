@@ -21,6 +21,10 @@
 # Usage:
 # Use similarly to essentials.
 #
+# Ignoring:
+# We are not replacing /xp, /weather, /give ...
+# because minecraft provides sufficient default commands.
+#
 # Commands/Permissions:
 # /name     -> short description            -> permission
 # ---------------------- Core        -------------------------------------------
