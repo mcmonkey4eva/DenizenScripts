@@ -10,6 +10,7 @@ namespace dEssentialsCompiler
     {
         static void Main(string[] args)
         {
+            string name = File.ReadAllText("compiler.txt").Replace("\r", "").Replace("\n", "");
             string[] files = Directory.GetFiles(Environment.CurrentDirectory, "*.yml");
             StringBuilder complete = new StringBuilder();
             for (int i = 0; i < files.Length; i++)
@@ -26,7 +27,7 @@ namespace dEssentialsCompiler
                     complete.Append(File.ReadAllText(files[i]));
                 }
             }
-            File.WriteAllText(Environment.CurrentDirectory + "/../dEssentials_Compiled.yml", complete.ToString());
+            File.WriteAllText(Environment.CurrentDirectory + name, complete.ToString());
         }
     }
 }
