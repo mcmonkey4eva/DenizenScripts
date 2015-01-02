@@ -23,10 +23,10 @@ dessentials_command_itemdb:
       - narrate "<&c>Unknown item."
       - queue clear
       }
-    - narrate "<&6>Item<&co> <&b><def[item].material.name>"
-    - narrate "<&6>Internal Name<&co> <&b><def[item].material.bukkit_enum>"
-    - narrate "<&6>Full Denizen descriptor<&co> <&b><def[item]>"
-    - narrate "<&6>Data values<&co> <&b><def[item].id><&f><&co><&b><def[item].data>"
+    - narrate "<&6>Item<&f><&co> <&b><def[item].material.name>"
+    - narrate "<&6>Internal name<&f><&co> <&b><def[item].material.bukkit_enum>"
+    - narrate "<&6>Full Denizen descriptor<&f><&co> <&b><def[item]>"
+    - narrate "<&6>Data values<&f><&co> <&b><def[item].id><&f><&co><&b><def[item].data>"
 
 dessentials_command_item:
     type: command
