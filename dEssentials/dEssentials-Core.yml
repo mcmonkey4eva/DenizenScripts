@@ -40,6 +40,7 @@
 # /endersee -> shows a player's enderchest  -> denizen.essentials.admin.endersee
 # ---------------------- Control     -------------------------------------------
 # /time     -> sets the world's time        -> denizen.essentials.admin.time
+# /speed    -> sets a player's speed        -> denizen.essentials.admin.speed
 #
 # ------------------------------------------------------------------------------
 

@@ -11,9 +11,9 @@
 # @denizen-build 1551
 # @date 2015-01-01
 #
-# @recommended dWorldEditor
-# @recommended dRegions
-# @recommended dSentry
+# @recommended dWorldEditor Coming Soon
+# @recommended dRegions Coming Soon
+# @recommended dSentry http://mcmonkey.org/denizen/repo/entry/0
 #
 # Installation:
 # Just drop it in your scripts folder and reload :D
@@ -40,6 +40,7 @@
 # /endersee -> shows a player's enderchest  -> denizen.essentials.admin.endersee
 # ---------------------- Control     -------------------------------------------
 # /time     -> sets the world's time        -> denizen.essentials.admin.time
+# /speed    -> sets a player's speed        -> denizen.essentials.admin.speed
 #
 # ------------------------------------------------------------------------------
 
@@ -108,6 +109,34 @@ dessentials_command_time:
       - define hour <def[hour].sub[24]>
       }
     - narrate "<&2>Set time in <&b><def[world].name><&2> to <&b><def[world].time>ticks<&2> (<&b><def[hour]> o' clock<&2>)."
+
+dessentials_command_speed:
+    type: command
+    debug: false
+    name: speed
+    description: Sets the player's speed.
+    usage: /speed <&lt>speed<&gt>
+    permission: denizen.essentials.admin.speed
+    script:
+    # TODO: / speed <speed> <player>
+    - if <context.server> {
+      - narrate "<&c>This command is for players only."
+      - queue clear
+      }
+    - if <context.args.size> == 0 {
+      - narrate "<&c>/speed <&lt>speed<&gt>"
+      - queue clear
+      }
+    - define speed <context.args.get[1].escaped.replace[&dot].with[.]>
+    - if <player.is_flying> {
+      - define type fly
+      }
+      else {
+      - define type walk
+      }
+    - adjust <player> <def[type]>_speed:<def[speed]>
+    # TODO: remove the %type% nonsense cheatery
+    - narrate "<&2>Player <&b><def[type]> <&2>speed set to <&b><player.%type%_speed><&2>."
 # dEssentials: Things a servers needs in one easy package!
 # --- ITEMS: Commands related to the item system.
 # See dEssentials-Core.yml for information
