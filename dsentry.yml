@@ -5,9 +5,9 @@
 # | Sentry rescripted in Denizen!
 #
 # @author mcmonkey
-# @date 2014 / 12 / 07
-# @build 1546
-# @version 7.0
+# @date 2015 / 01 / 05
+# @build 1555
+# @version 0.7.1
 #
 # Installation:
 # Just copy the script to your scripts folder and /denizen reload scripts
@@ -95,9 +95,16 @@ dsentry_world_handler:
 
         on player damaged by player:
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-          - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null 
-            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvP
-            && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
+          - if !<def[value].is_spawned> || <def[value].flag[dsentry.target]||null> != null  {
+            - foreach next
+            }
+          - if <def[value].flag[dsentry.eventtargets].as_list||li@> !contains PvP {
+            - foreach next
+            }
+          - if <def[value].location.world.name> != <context.damager.location.world.name> {
+            - foreach next
+            }
+          if <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
           }
@@ -106,9 +113,16 @@ dsentry_world_handler:
         - if <context.entity> matches player queue clear
         - if <context.entity> matches npc queue clear
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
-          - if <def[value].is_spawned> && <def[value].flag[dsentry.target]||null> == null
-            && <def[value].flag[dsentry.eventtargets].as_list||li@> contains PvE
-            && <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
+          - if !<def[value].is_spawned> || <def[value].flag[dsentry.target]||null> != null {
+            - foreach next
+            }
+          - if <def[value].flag[dsentry.eventtargets].as_list||li@> !contains PvE {
+            - foreach next
+            }
+          -  if <def[value].location.world.name> != <context.damager.location.world.name> {
+            - foreach next
+            }
+          - if <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
           }
