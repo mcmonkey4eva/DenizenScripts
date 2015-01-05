@@ -41,6 +41,9 @@
 # ---------------------- Control     -------------------------------------------
 # /time     -> sets the world's time        -> denizen.essentials.admin.time
 # /speed    -> sets a player's speed        -> denizen.essentials.admin.speed
+# ---------------------- Core        -------------------------------------------
+# sign coloring                             -> denizen.essentials.utility.signcolor
+# chat coloring                             -> denizen.essentials.utility.chatcolor
 #
 # ------------------------------------------------------------------------------
 
@@ -302,3 +305,24 @@ dessentials_command_warp:
     # TODO: Delay option, price option
     - narrate "<&6>Teleporting..."
     - teleport <player> %existing%
+# dEssentials: Things a servers needs in one easy package!
+# --- UTILITY: Functionality not contained within a command.
+# See dEssentials-Core.yml for information
+
+dessentials_utility_signcolor:
+    type: world
+    debug: false
+    events:
+        on player changes sign:
+        - if <player.has_permission[denizen.essentials.utility.signcolor]||<player.is_op>> {
+          - determine <context.new.replace[regex:&([0-9a-fA-Flk-oK-OrR])].with[<red.substring[1,1]>$1]>
+          }
+
+dessentials_utility_chatcolor:
+    type: world
+    debug: false
+    events:
+        on player chats:
+        - if <player.has_permission[denizen.essentials.utility.chatcolor]||<player.is_op>> {
+          - determine <context.message.replace[regex:&([0-9a-fA-Flk-oK-OrR])].with[<red.substring[1,1]>$1]>
+          }

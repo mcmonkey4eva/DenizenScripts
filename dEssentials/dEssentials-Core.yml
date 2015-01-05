@@ -41,6 +41,9 @@
 # ---------------------- Control     -------------------------------------------
 # /time     -> sets the world's time        -> denizen.essentials.admin.time
 # /speed    -> sets a player's speed        -> denizen.essentials.admin.speed
+# ---------------------- Core        -------------------------------------------
+# sign coloring                             -> denizen.essentials.utility.signcolor
+# chat coloring                             -> denizen.essentials.utility.chatcolor
 #
 # ------------------------------------------------------------------------------
 
