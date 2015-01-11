@@ -74,8 +74,7 @@ dsentry_world_handler:
             - yaml create id:dsentry_saves
             }
           }
-        - define queues <queue.list.filter[starts_with[dsentry_task_logic]]>
-        - foreach %queues% {
+        - foreach <queue.list.filter[starts_with[dsentry_task_logic]]> {
           - queue %value% stop
           }
         - wait 5s
@@ -110,8 +109,7 @@ dsentry_world_handler:
           }
 
         on entity damaged by player:
-        - if <context.entity> matches player queue clear
-        - if <context.entity> matches npc queue clear
+        - ^if <context.entity.is_player> || <context.entity.is_npc> ^queue clear
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if !<def[value].is_spawned> || <def[value].flag[dsentry.target]||null> != null {
             - foreach next
