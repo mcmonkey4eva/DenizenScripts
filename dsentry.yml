@@ -5,9 +5,9 @@
 # | Sentry rescripted in Denizen!
 #
 # @author mcmonkey
-# @date 2015 / 01 / 05
-# @build 1555
-# @version 0.7.1
+# @date 2015 / 03 / 07
+# @build 1568
+# @version 0.7.2
 #
 # Installation:
 # Just copy the script to your scripts folder and /denizen reload scripts
@@ -136,12 +136,16 @@ dsentry_world_handler:
 
         # TODO: calculate NPC armor properly
         on npc damaged:
-        - if !<context.entity.has_flag[dsentry.is_dsentry]> queue clear
+        - if !<context.entity.has_flag[dsentry.is_dsentry]> {
+          - queue clear
+          }
         - define armor <proc[dsentry_proc_calculatearmor]> npc:<context.entity>
         - determine <el@val[1].sub[%armor%].mul[<context.damage>]>
 
         on npc damages entity:
-        - if !<context.damager.as_npc.has_flag[dsentry.is_dsentry]> queue clear
+        - if !<context.damager.as_npc.has_flag[dsentry.is_dsentry]> {
+          - queue clear
+          }
         - determine <proc[dsentry_proc_calculatedamage]> npc:<context.damager.as_npc>
 
 dsentry_command_handler:
@@ -170,7 +174,9 @@ dsentry_command_handler:
       }
     - define arg1 <c.args.get[1].escaped||null>
     - define argList li@create|save|range|followrange|speed|attackrate|damage|add|remove|info|guard|armor|health
-    - if <def[argList].contains[%arg1%]> inject locally dsentry_command_%arg1%
+    - if <def[argList].contains[%arg1%]> {
+      - inject locally dsentry_command_%arg1%
+      }
       else {
       - narrate "<&6>/dSentry create [save-type]"
       - narrate "<&6>/dSentry save <&lt>save-type<&gt>"
