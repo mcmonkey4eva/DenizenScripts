@@ -623,7 +623,7 @@ dsentry_task_attack:
     debug: false
     script:
     # this section adds 10 to dsentry.attackping every time it is called by dsentry_task_logic (every 10 ticks).
-    - flag npc dsentry.attackping:<npc.flag[dsentry.attackping].add[10].asint||0>
+    - flag npc dsentry.attackping:<npc.flag[dsentry.attackping].add[10].as_int||0>
     - if <npc.flag[dsentry.attackping]> >= <npc.flag[dsentry.attackrate]> {
       - flag npc dsentry.attackping:0
       }
