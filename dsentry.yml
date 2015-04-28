@@ -110,8 +110,8 @@ dsentry_world_handler:
           }
 
         on entity damaged by player:
-        - if <context.entity> matches player queue clear
-        - if <context.entity> matches npc queue clear
+        - if <context.entity.is_player> queue clear
+        - if <context.entity.is_npc> queue clear
         - foreach <server.get_npcs_flagged[dsentry.is_dsentry]> {
           - if !<def[value].is_spawned> || <def[value].flag[dsentry.target]||null> != null {
             - foreach next
@@ -578,6 +578,7 @@ dsentry_proc_picktarget:
           }
         }
       }
+    - flag npc dsentry.target:null
     - if <npc.flag[dsentry.targets].size||0> == 0 {
       - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
       - queue clear
@@ -585,12 +586,12 @@ dsentry_proc_picktarget:
     - define entities <npc.location.find.entities[<npc.flag[dsentry.targets].as_list>|player].within[<npc.flag[dsentry.range]>].exclude[<npc>]>
     - define entity null
     - foreach %entities% {
-      - if %value% matches npc {
+      - if <def[value].is_npc> {
         - define entities <def[entities].exclude[%value%]>
         }
       }
     - foreach %entities% {
-      - if %value% matches player {
+      - if <def[value].is_player> {
         - define playrar %value%
         - define TEMP_PLAYER_PASS <npc.flag[dsentry.targets].contains[player]||false>
         - foreach <npc.flag[dsentry.flagtargets].as_list||li@> {
@@ -612,17 +613,13 @@ dsentry_proc_picktarget:
         - foreach stop
         }
       }
-    - if %entity% != null {
-      - determine %entity%
-      }
-    - determine null
+    - determine <def[entity]||null>
 
 # Makes a dSentry NPC attack the target
 dsentry_task_attack:
     type: task
     debug: false
     script:
-    # this section adds 10 to dsentry.attackping every time it is called by dsentry_task_logic (every 10 ticks).
     - flag npc dsentry.attackping:<npc.flag[dsentry.attackping].add[10].as_int||0>
     - if <npc.flag[dsentry.attackping]> >= <npc.flag[dsentry.attackrate]> {
       - flag npc dsentry.attackping:0
@@ -630,7 +627,6 @@ dsentry_task_attack:
       else {
       - queue clear
       }
-    # call dsentry_proc_picktarget if there is no current target, the current target is not spawned, or is out of sight.
     - if <npc.flag[dsentry.target]||null> == null {
       - flag npc dsentry.target:<proc[dsentry_proc_picktarget]> 
       }
@@ -639,12 +635,11 @@ dsentry_task_attack:
         - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
-    # section handles the following behaviour of dSentries who are guarding 
     - define valid false
-    - if <npc.flag[dsentry.follow_target]||null> matches player {
+    - if <npc.flag[dsentry.follow_target].is_player||false> {
       - if <npc.flag[dsentry.follow_target].as_player.is_online||false> define valid true
       }
-      else if <npc.flag[dsentry.follow_target]||null> matches npc {
+      else if <npc.flag[dsentry.follow_target].is_npc||false> {
         - if <npc.flag[dsentry.follow_target].as_npc.is_spawned||false> define valid true
         }
     - if %valid% {
@@ -657,7 +652,6 @@ dsentry_task_attack:
           }
         }
       }
-    # end of guarding specific code
     - if <npc.flag[dsentry.target]||null> == null {
       - if <npc.entity_type> == player animate <npc> animation:stop_use_item
       - queue clear
