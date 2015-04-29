@@ -428,7 +428,8 @@ dsentry_command_handler:
       - narrate "<&6>That health value doesn't look like a proper number."
       - queue clear
       }
-    - flag %mynpc% dsentry.health:<context.args.get[2].div[100]>
+    - flag %mynpc% dsentry.health:<context.args.get[2].div[100].as_int>
+    - health npc:%mynpc% <def[mynpc].flag[dsentry.health]>
     - narrate "<&6>Health set."
 
     dsentry_command_speed:
