@@ -579,7 +579,6 @@ dsentry_proc_picktarget:
           }
         }
       }
-    - flag npc dsentry.target:null
     - if <npc.flag[dsentry.targets].size||0> == 0 {
       - announce to_console "<&6>NPC <npc.id> is marked as a dSentry but does not have a targets list!"
       - queue clear
