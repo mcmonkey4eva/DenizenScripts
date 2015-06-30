@@ -10,23 +10,23 @@ dessentials_command_itemdb:
     usage: /itemdb [item]
     permission: denizen.essentials.user.itemdb
     script:
-    - if <context.server> && <context.args.size> != 1 {
-      - narrate "<&c>This command is for players only."
-      - narrate "<&c>Available for the server<&co> /itemdb <&lt>item<&gt>"
-      - queue clear
-      }
-    - define item <player.item_in_hand>
-    - if <context.args.size> == 1 {
-      - define item i@<context.args.get[1]>
-      }
-    - if <def[item].is[==].to[null]> || <def[item].material.name||null> == null {
-      - narrate "<&c>Unknown item."
-      - queue clear
-      }
-    - narrate "<&6>Item<&f><&co> <&b><def[item].material.name>"
-    - narrate "<&6>Internal name<&f><&co> <&b><def[item].material.bukkit_enum>"
-    - narrate "<&6>Full Denizen descriptor<&f><&co> <&b><def[item]>"
-    - narrate "<&6>Data values<&f><&co> <&b><def[item].id><&f><&co><&b><def[item].data>"
+        - if <context.server> && <context.args.size> != 1 {
+            - narrate "<&c>This command is for players only."
+            - narrate "<&c>Available for the server<&co> /itemdb <&lt>item<&gt>"
+            - queue clear
+        }
+        - define item <player.item_in_hand>
+        - if <context.args.size> == 1 {
+            - define item i@<context.args.get[1]>
+        }
+        - if <def[item].is[==].to[null]> || <def[item].material.name||null> == null {
+            - narrate "<&c>Unknown item."
+            - queue clear
+        }
+        - narrate "<&6>Item<&f><&co> <&b><def[item].material.name>"
+        - narrate "<&6>Internal name<&f><&co> <&b><def[item].material.bukkit_enum>"
+        - narrate "<&6>Full Denizen descriptor<&f><&co> <&b><def[item]>"
+        - narrate "<&6>Data values<&f><&co> <&b><def[item].id><&f><&co><&b><def[item].data>"
 
 dessentials_command_item:
     type: command
@@ -36,24 +36,25 @@ dessentials_command_item:
     usage: /item <&lt>item<&gt>
     permission: denizen.essentials.admin.item
     aliases:
-    - i
+        - i
     script:
-    - if <context.server> {
-      - narrate "<&c>This command is for players only."
-      - queue clear
-      }
-    - if <context.args.size> < 1 {
-      - narrate "<&c>/item <&lt>item<&gt>"
-      - queue clear
-      }
-    - define item "i@<context.raw_args>"
-    - if <def[item].material.name||null> == null {
-      - narrate "<&c>Unknown item."
-      - queue clear
-      }
-    - adjust <def[item]> quantity:1 save:myitem
-    - narrate "<&2>Giving <&b><def[item].qty><&2> of <&b><entry[myitem].result><&2>."
-    - give <def[item]>
+        - if <context.server> {
+            - narrate "<&c>This command is for players only."
+            - queue clear
+        }
+        - if !<server.has_permissions> && !<player.is_op> queue clear
+        - if <context.args.size> < 1 {
+            - narrate "<&c>/item <&lt>item<&gt>"
+            - queue clear
+        }
+        - define item "i@<context.raw_args>"
+        - if <def[item].material.name||null> == null {
+            - narrate "<&c>Unknown item."
+            - queue clear
+        }
+        - adjust <def[item]> quantity:1 save:myitem
+        - narrate "<&2>Giving <&b><def[item].qty><&2> of <&b><entry[myitem].result><&2>."
+        - give <def[item]>
 
 dessentials_command_invsee:
     type: command
@@ -62,9 +63,28 @@ dessentials_command_invsee:
     description: Shows the inventory of another player.
     usage: /invess <&lt>player<&gt>
     permission: denizen.essentials.admin.invsee
+    tab complete:
+        - if !<player.has_permission[<script.yaml_key[permission]>]||<context.server>> queue clear
+        - determine <server.list_players.parse[name]>
     script:
-    # TODO
-    - narrate "This command is a stub."
+        - if <context.server> {
+            - narrate "<&c>This command is for players only!"
+            - queue clear
+        }
+        - if !<server.has_permissions> && !<player.is_op> queue clear
+        - if <context.args.size> != 1 {
+            - narrate "<&c>/invsee <&lt>playername<&gt>"
+            - queue clear
+        }
+        - define player <server.match_player[<context.args.get[1]>]||null>
+        - if <def[player]> == null {
+            - define player <server.match_offline_player[<context.args.get[1]>]||null>
+        }
+        - if <def[player]> == null {
+            - narrate "<&c>No player found with name <context.args.get[1]>"
+            - queue clear
+        }
+        - inventory open d:<def[player].inventory> 
 
 dessentials_command_endersee:
     type: command
@@ -73,6 +93,25 @@ dessentials_command_endersee:
     description: Shows the enderchest of another player.
     usage: /endersee <&lt>player<&gt>
     permission: denizen.essentials.admin.endersee
+    tab complete:
+        - if !<player.has_permission[<script.yaml_key[permission]>]||<context.server>> queue clear
+        - determine <server.list_players.parse[name].filter[starts_with[<context.args.last>]]>
     script:
-    # TODO
-    - narrate "This command is a stub."
+        - if <context.server> {
+            - narrate "<&c>This command is for players only!"
+            - queue clear
+        }
+        - if !<server.has_permissions> && !<player.is_op> queue clear
+        - if <context.args.size> != 1 {
+            - narrate "<&c>/endersee <&lt>playername<&gt>"
+            - queue clear
+        }
+        - define player <server.match_player[<context.args.get[1]>]||null>
+        - if <def[player]> == null {
+            - define player <server.match_offline_player[<context.args.get[1]>]||null>
+        }
+        - if <def[player]> == null {
+            - narrate "<&c>No player found with name <context.args.get[1]>"
+            - queue clear
+        }
+        - inventory open d:<def[player].enderchest>
