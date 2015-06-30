@@ -10,11 +10,11 @@ dessentials_command_spawn:
     usage: /spawn
     permission: denizen.essentials.user.spawn
     script:
-    - if <context.server> {
-      - narrate "<&c>This command is for players only."
-      - queue clear
-      }
-    - teleport <player> <player.world.spawn_location>
+        - if <context.server> {
+            - narrate "<&c>This command is for players only."
+            - queue clear
+        }
+        - teleport <player> <player.world.spawn_location>
 
 dessentials_command_setspawn:
     type: command
@@ -24,11 +24,12 @@ dessentials_command_setspawn:
     usage: /setspawn
     permission: denizen.essentials.admin.setspawn
     script:
-    - if <context.server> {
-      - narrate "<&c>This command is for players only."
-      - queue clear
-      }
-    - adjust <player.world> spawn_location:<player.location>
+        - if <context.server> {
+            - narrate "<&c>This command is for players only."
+            - queue clear
+        }
+        - if !<server.has_permissions> && !<player.is_op> queue clear
+        - adjust <player.world> spawn_location:<player.location>
 
 dessentials_command_setwarp:
     type: command
@@ -38,24 +39,25 @@ dessentials_command_setwarp:
     usage: /setwarp <&lt>name<&gt>
     permission: denizen.essentials.admin.setwarp
     script:
-    - if <context.server> {
-      - narrate "<&c>This command is for players only."
-      - queue clear
-      }
-    - if <context.args.size> != 1 {
-      - narrate "<&c>/setwarp <&lt>name<&gt>"
-      - queue clear
-      }
-    - if <context.args.get[1].is[!=].to[<context.args.get[1].escaped>]> {
-      - narrate "<&c>Simple (alphanumeric) warp names only please."
-      - queue clear
-      }
-    - define existing <server.flag[dessentials.warps.<context.args.get[1]>]||null>
-    - if %existing% != null {
-      - narrate "<&c>Warning<&co> Override existing warp (at location<&co> <&b><def[existing].simple><&c>)"
-      }
-    - flag server dessentials.warps.<context.args.get[1]>:<player.location>
-    - narrate "<&2>Set warp <&b><context.args.get[1]><&2> at <&b><player.location.simple><&2>!"
+        - if <context.server> {
+            - narrate "<&c>This command is for players only."
+            - queue clear
+        }
+        - if !<server.has_permissions> && !<player.is_op> queue clear
+        - if <context.args.size> != 1 {
+            - narrate "<&c>/setwarp <&lt>name<&gt>"
+            - queue clear
+        }
+        - if <context.args.get[1].is[!=].to[<context.args.get[1].escaped>]> {
+            - narrate "<&c>Simple (alphanumeric) warp names only please."
+            - queue clear
+        }
+        - define existing <server.flag[dessentials.warps.<context.args.get[1]>]||null>
+        - if %existing% != null {
+            - narrate "<&c>Warning<&co> Override existing warp (at location<&co> <&b><def[existing].simple><&c>)"
+        }
+        - flag server dessentials.warps.<context.args.get[1]>:<player.location>
+        - narrate "<&2>Set warp <&b><context.args.get[1]><&2> at <&b><player.location.simple><&2>!"
 
 dessentials_command_warp:
     type: command
@@ -65,23 +67,23 @@ dessentials_command_warp:
     usage: /warp [name]
     permission: denizen.essentials.user.warp
     script:
-    - if <context.server> {
-      - narrate "<&c>This command is for players only. (Coming soon: /warp [name] [player])"
-      - queue clear
-      }
-    - if <context.args.size> != 1 {
-      - narrate "Warp list coming soon!"
-      - queue clear
-      }
-    - if <context.args.get[1].is[!=].to[<context.args.get[1].escaped>]> {
-      - narrate "<&c>Simple (alphanumeric) warp names only please."
-      - queue clear
-      }
-    - define existing <server.flag[dessentials.warps.<context.args.get[1]>]||null>
-    - if %existing% == null {
-      - narrate "<&c>Unknown warp name."
-      - queue clear
-      }
-    # TODO: Delay option, price option
-    - narrate "<&6>Teleporting..."
-    - teleport <player> %existing%
+        - if <context.server> {
+            - narrate "<&c>This command is for players only. (Coming soon: /warp [name] [player])"
+            - queue clear
+        }
+        - if <context.args.size> != 1 {
+            - narrate "Warp list coming soon!"
+            - queue clear
+        }
+        - if <context.args.get[1].is[!=].to[<context.args.get[1].escaped>]> {
+            - narrate "<&c>Simple (alphanumeric) warp names only please."
+            - queue clear
+        }
+        - define existing <server.flag[dessentials.warps.<context.args.get[1]>]||null>
+        - if %existing% == null {
+            - narrate "<&c>Unknown warp name."
+            - queue clear
+        }
+        # TODO: Delay option, price option
+        - narrate "<&6>Teleporting..."
+        - teleport <player> %existing%
