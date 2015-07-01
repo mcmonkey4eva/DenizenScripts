@@ -111,6 +111,7 @@ dessentials_command_endersee:
 
 dessentials_command_enchant:
     type: command
+    debug: false
     name: enchant
     description: Allows you to enchant the item in hand. Level is required.
     usage: /enchant <&lt>enchantment,level|...<&gt>
@@ -150,9 +151,10 @@ dessentials_command_enchant:
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
     - define enchantments <entry[item].result.enchantments.with_levels>
     ## Change narrate command to display as Names, not ID's ##
-    #- narrate "<&2>Enchanted item with <&b><proc[FormatEnchant].context[<def[enchantments]>]><&2>."
+    #- narrate "<&2>Enchanted item with <&b><proc[dessentials_formatenchant_proc].context[<def[enchantments]>]><&2>."
     - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"
-FormatEnchant:
+
+dessentials_formatenchant_proc:
     type: procedure
     definitions: list
     script:
