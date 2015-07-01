@@ -73,7 +73,7 @@ dessentials_command_day:
       - queue clear
     }
     - if !<server.has_permissions> && !<player.is_op> queue clear
-    - if <context.args> != 0 {
+    - if <context.args> > 0 {
       - narrate "<&c>/day"
       - queue clear
     }
@@ -90,7 +90,7 @@ dessentials_command_night:
       - queue clear
     }
     - if !<server.has_permissions> && !<player.is_op> queue clear
-    - if <context.args> != 0 {
+    - if <context.args> > 0 {
       - narrate "<&c>/night"
       - queue clear
     }
