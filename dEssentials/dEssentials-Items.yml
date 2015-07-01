@@ -60,7 +60,7 @@ dessentials_command_invsee:
     debug: false
     name: invsee
     description: Shows the inventory of another player.
-    usage: /invess <&lt>player<&gt>
+    usage: /invsee <&lt>player<&gt>
     permission: denizen.essentials.admin.invsee
     tab complete:
     - if !<player.has_permission[<script.yaml_key[permission]>]||<context.server>> queue clear
@@ -72,12 +72,12 @@ dessentials_command_invsee:
     }
     - if !<server.has_permissions> && !<player.is_op> queue clear
     - if <context.args.size> != 1 {
-      - narrate "<&c>/invsee <&lt>playername<&gt>"
+      - narrate "<&c>/invsee <&lt>player<&gt>"
       - queue clear
     }
     - define player <server.match_player[<context.args.get[1]>]||<server.match_offline_player[<context.args.get[1]>]||null>>
     - if <def[player]> == null {
-      - narrate "<&c>No player found with name <context.args.get[1]>"
+      - narrate "<&c>No player found with name <&b><context.args.get[1]>"
       - queue clear
     }
     - inventory open d:<def[player].inventory>
@@ -99,12 +99,12 @@ dessentials_command_endersee:
     }
     - if !<server.has_permissions> && !<player.is_op> queue clear
     - if <context.args.size> != 1 {
-      - narrate "<&c>/endersee <&lt>playername<&gt>"
+      - narrate "<&c>/endersee <&lt>player<&gt>"
       - queue clear
     }
     - define player <server.match_player[<context.args.get[1]>]||<server.match_offline_player[<context.args.get[1]>]||null>>
     - if <def[player]> == null {
-      - narrate "<&c>No player found with name <context.args.get[1]>"
+      - narrate "<&c>No player found with name <&b><context.args.get[1]>"
       - queue clear
     }
     - inventory open d:<def[player].enderchest>
