@@ -148,10 +148,10 @@ dessentials_command_enchant:
     }
     - adjust <def[item]> enchantments:<def[enchantments]> save:item
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
+    - define enchantments <entry[item].result.enchantments.with_levels>
     ## Change narrate command to display as Names, not ID's ##
     #- narrate "<&2>Enchanted item with <&b><proc[FormatEnchant].context[<def[enchantments]>]><&2>."
-    - narrate "<def[enchatments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]>"
-
+    - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"
 FormatEnchant:
     type: procedure
     definitions: list
