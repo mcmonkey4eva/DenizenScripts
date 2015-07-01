@@ -148,4 +148,5 @@ dessentials_command_enchant:
     }
     - adjust <def[item]> enchantments:<def[enchantments]> save:item
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
-    - narrate "<&2>Enchanted item with <entry[item].result.enchantments.with_levels.formatted>"
+    - define formatted "<&b><entry[item].result.enchantments.with_levels.parse[replace[,].with[ <&2>level:<&b> ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]>"
+    - narrate "<&2>Enchanted item with <def[formatted]><&2>."
