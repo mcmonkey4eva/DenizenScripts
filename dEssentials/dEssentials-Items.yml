@@ -131,7 +131,7 @@ dessentials_command_enchant:
       - queue clear
     }
     - define enchantments <context.args.get[1].escaped.split[&pipe]>
-    - define valid li@ARROW_DAMAGE|ARROW_FIRE|ARROW_INFINITE|ARROW_KNOCKBACK|DAMAGE_ALL|DAMAGE_ANTROPODS|DAMAGE_UNDEAD|DEPTH_STRIDER
+    - define valid li@ARROW_DAMAGE|ARROW_FIRE|ARROW_INFINITE|ARROW_KNOCKBACK|DAMAGE_ALL|DAMAGE_ANTHROPODSROPODS|DAMAGE_UNDEAD|DEPTH_STRIDER
     - define valid <def[valid].include[DIG_SPEED|DURABILITY|FIRE_ASPECT|KNOCKBACK|LOOT_BONUS_BLOCKS|LUCK|LURE|OXYGEN|PROTECTION_ENVIRONMENTAL]>
     - define valid <def[valid].include[PROTECTION_EXPLOSIONS|PROTECTION_FALL|PROTECTION_FIRE|PROTECTION_PROJECTILE|SILK_TOUCH|THORNS|WATER_WORKER]>
     - foreach <def[enchantments]> {
@@ -148,5 +148,21 @@ dessentials_command_enchant:
     }
     - adjust <def[item]> enchantments:<def[enchantments]> save:item
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
-    - define formatted "<&b><entry[item].result.enchantments.with_levels.parse[replace[,].with[ <&2>level:<&b> ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]>"
-    - narrate "<&2>Enchanted item with <def[formatted]><&2>."
+    ## Change narrate command to display as Names, not ID's ##
+    #- narrate "<&2>Enchanted item with <&b><proc[FormatEnchant].context[<def[enchantments]>]><&2>."
+    - narrate "<def[enchatments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]>"
+
+FormatEnchant:
+    type: procedure
+    definitions: list
+    script:
+    - define list "<def[list].parse[replace[,].with[: ]]>"
+    - define list "<def[list].parse[replace[ARROW_DAMAGE].with[Power]].replace[ARROW_FIRE].with[Flame].replace[ARROW_INFINITE].with[Infinity].replace[ARROW_KNOCKBACK].with[Punch]>"
+    - define list "<def[list].parse[replace[DAMAGE_ALL].with[Sharpness].replace[DAMAGE_ANTHROPODS].with[Bane of Anthropods].replace[DAMAGE_UNDEAD].with[Smite].replace[DEPTH_STRIDER].with[Depth_Strider]]>"
+    - define list "<def[list].parse[replace[DIG_SPEED].with[Efficiency].replace[DURABILITY].with[Unbreaking].replace[FIRE_ASPECT].with[Fire Aspect].replace[KNOCKBACK].with[Knockback]]>"
+    - define list "<def[list].parse[replace[LOOT_BONUS_BLOCK].with[Fortune].replace[LUCK].with[Luck of the Sea].replace[LURE].with[Lure].replace[OXYGEN].with[Respiration]]]>"
+    - define list "<def[list].parse[replace[PROTECTION_ENVIRONMENTAL].with[Protection].replace[PROTECTION_EXPLOSION].with[Blast Protection].replace[PROTECTION_FALL].with[Feather Fall]]>"
+    - define list "<def[list].parse[replace[PROTECTION_FIRE].with[Fire Protection].replace[PROTECTION_PROJECTILE].with[Projectile Protection].replace[SILK_TOUCH].with[Silk Touch]]>"
+    - define list "<def[list].parse[replace[THORNS].with[Thorns].replace[WATER_WORKER].with[Aqua Affinity]]>"
+    - define list "<def[list].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]>"
+    - determine <def[list]>
