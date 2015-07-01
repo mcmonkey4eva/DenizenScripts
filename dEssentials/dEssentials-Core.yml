@@ -47,6 +47,7 @@
 # /day      -> sets the time to day         -> denizen.essentials.admin.time
 # /night    -> sets the time to night       -> denizen.essentials.admin.time
 # /speed    -> sets a player's speed        -> denizen.essentials.admin.speed
+# /butcher  -> removes entities within area -> denizen.essentials.admin.butcher
 # ---------------------- Utility     -------------------------------------------
 # sign coloring                             -> denizen.essentials.utility.signcolor
 # chat coloring                             -> denizen.essentials.utility.chatcolor
