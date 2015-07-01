@@ -68,11 +68,11 @@ dessentials_command_day:
     usage: /day
     permission: denizen.essentials.admin.time
     script:
+    ## TODO /day []world]
     - if <context.server> {
       - narrate "<&c>This command is for players only."
       - queue clear
     }
-    - if !<server.has_permissions> && !<player.is_op> queue clear
     - if <context.args> > 0 {
       - narrate "<&c>/day"
       - queue clear
@@ -85,11 +85,11 @@ dessentials_command_night:
     name: night
     permission: denizen.essentials.admin.time
     script:
+    ## TODO /night [world]
     - if <context.server> {
       - narrate "<&c>This command is for players only."
       - queue clear
     }
-    - if !<server.has_permissions> && !<player.is_op> queue clear
     - if <context.args> > 0 {
       - narrate "<&c>/night"
       - queue clear
@@ -124,3 +124,47 @@ dessentials_command_speed:
     - adjust <player> <def[type]>_speed:<def[speed]>
     # TODO: remove the %type% nonsense cheatery
     - narrate "<&2>Player <&b><def[type]> <&2>speed set to <&b><player.%type%_speed><&2>."
+
+dessentials_command_butcher:
+  type: command
+  name: butcher
+  description: Butchers all mobs/animals within a radius. Radius defaults to 25 if empty.
+  usage: /butcher [{mobs}/animals/ambient] [radius] 
+  permission: denizen.essentials.admin.butcher
+  ## TODO type: all
+  types: li@mobs|animals|ambient
+  mobs: li@spider|creeper|cave_spider|slime|zombie|skeleton|witch|silverfish|enderman
+  animals: li@bat|chicken|cow|pig|rabbit|sheep|squid|mushroom_cow
+  ambient: li@ocelot|wolf|iron_golem|horse|villager
+  script:
+  - if <context.server> {
+    - narrate "<&c>This command is for players only."
+    - queue clear
+  }
+  - if <context.args.size> == 0 {
+    - define radius 25
+    - define type mobs
+  }
+  else if <context.args.size> == 1 {
+    - define type <context.args.get[1]||null>
+    - if !<script.yaml_key[types].contains[<def[type]>]> {
+      - narrate "<&c>Invalid type."
+      - queue clear
+    }
+    - define radius 25
+  }
+  else if <context.args.size> == 2 {
+    - define type <context.args.get[1]||null>
+    - if !<script.yaml_key[types].contains[<def[type]>]> {
+      - narrate "<&c>Invalid type."
+      - queue clear
+    }
+    - define radius <context.args.get[2].as_int||null>
+    - if <def[radius]> == null {
+      - narrate "<&c>Invalid radius."
+      - queue clear
+    }
+  }
+  - define butcher <player.location.find.entities[<script.yaml_key[<def[type]>]>].within[<def[radius]>]>
+  - narrate "<&2>Removing <&b><def[butcher].size><&2> entities within <&b><def[radius]><&2> blocks of type <&b><def[type]><&2>."
+  - remove <def[butcher]>

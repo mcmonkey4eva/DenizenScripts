@@ -70,7 +70,6 @@ dessentials_command_invsee:
       - narrate "<&c>This command is for players only!"
       - queue clear
     }
-    - if !<server.has_permissions> && !<player.is_op> queue clear
     - if <context.args.size> != 1 {
       - narrate "<&c>/invsee <&lt>player<&gt>"
       - queue clear
@@ -97,7 +96,6 @@ dessentials_command_endersee:
       - narrate "<&c>This command is for players only!"
       - queue clear
     }
-    - if !<server.has_permissions> && !<player.is_op> queue clear
     - if <context.args.size> != 1 {
       - narrate "<&c>/endersee <&lt>player<&gt>"
       - queue clear
@@ -121,7 +119,6 @@ dessentials_command_enchant:
       - narrate "<&c>This command is for players only!"
       - queue clear
     }
-    - if !<server.has_permissions> && !<player.is_op> queue clear
     - if <context.args.size> != 1 {
       - narrate "<&c>/enchant <&lt>enchantment,level|...<&gt>"
       - queue clear
