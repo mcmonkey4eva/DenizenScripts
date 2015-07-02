@@ -112,7 +112,7 @@ dessentials_command_enchant:
     debug: false
     name: enchant
     description: Allows you to enchant the item in hand. Level is required.
-    usage: /enchant <&lt>enchantment,level|...<&gt>
+    usage: /enchant <&lt>enchantment,level|.../list<&gt>
     permission: denizen.essentials.admin.enchant
     script:
     - if <context.server> {
@@ -120,7 +120,7 @@ dessentials_command_enchant:
       - queue clear
     }
     - if <context.args.size> != 1 {
-      - narrate "<&c>/enchant <&lt>enchantment,level|...<&gt>"
+      - narrate "<&c>/enchant <&lt>enchantment,level|...<&gt>/list"
       - queue clear
     }
     - define valid li@ARROW_DAMAGE|ARROW_FIRE|ARROW_INFINITE|ARROW_KNOCKBACK|DAMAGE_ALL|DAMAGE_ANTHROPODSROPODS|DAMAGE_UNDEAD|DEPTH_STRIDER
