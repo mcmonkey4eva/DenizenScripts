@@ -74,7 +74,7 @@ dessentials_command_invsee:
       - narrate "<&c>/invsee <&lt>player<&gt>"
       - queue clear
     }
-    - define player <proc[dessentials_findplayer].context[<context.args.get[1]>]>
+    - define player <server.match_offline_player[<context.args.get[1]>]>
     - if <def[player]> == null {
       - narrate "<&c>No player found with name <&b><context.args.get[1]>"
       - queue clear
@@ -100,7 +100,7 @@ dessentials_command_endersee:
       - narrate "<&c>/endersee <&lt>player<&gt>"
       - queue clear
     }
-    - define player <proc[dessentials_findplayer].context[<context.args.get[1]>]>
+    - define player <server.match_offline_player[<context.args.get[1]>]>
     - if <def[player]> == null {
       - narrate "<&c>No player found with name <&b><context.args.get[1]>"
       - queue clear
