@@ -12,6 +12,7 @@
 # @date 2015-01-01
 #
 # @special_thanks_to Oz (some contributions)
+# @special_thanks_to Fortifier42 (updates)
 #
 # @recommended dWorldEditor Coming Soon
 # @recommended dRegions Coming Soon
@@ -19,6 +20,7 @@
 #
 # Installation:
 # Just drop it in your scripts folder and reload :D
+# Recommended installation of a permissions plugin for full support
 #
 # Usage:
 # Use similarly to essentials.
@@ -40,13 +42,16 @@
 # /item     -> gives an item to the player  -> denizen.essentials.admin.item
 # /invsee   -> shows a player's inventory   -> denizen.essentials.admin.invsee
 # /endersee -> shows a player's enderchest  -> denizen.essentials.admin.endersee
+# /enchant  -> allows you to easily enchant -> denizen.essentials.admin.enchant
 # ---------------------- Control     -------------------------------------------
 # /time     -> sets the world's time        -> denizen.essentials.admin.time
+# /day      -> sets the time to day         -> denizen.essentials.admin.time
+# /night    -> sets the time to night       -> denizen.essentials.admin.time
 # /speed    -> sets a player's speed        -> denizen.essentials.admin.speed
-# ---------------------- Core        -------------------------------------------
+# /butcher  -> removes entities within area -> denizen.essentials.admin.butcher
+# ---------------------- Utility     -------------------------------------------
 # sign coloring                             -> denizen.essentials.utility.signcolor
 # chat coloring                             -> denizen.essentials.utility.chatcolor
-#
 # ------------------------------------------------------------------------------
 
 placeholder:

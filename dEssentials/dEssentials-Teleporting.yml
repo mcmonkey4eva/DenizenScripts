@@ -29,6 +29,7 @@ dessentials_command_setspawn:
       - queue clear
       }
     - adjust <player.world> spawn_location:<player.location>
+    - narrate "<&2>Spawn location in <&b><player.world.name> <&2>set to <&b><player.location.simple.replace[,<player.world.name>]><&2>."
 
 dessentials_command_setwarp:
     type: command
