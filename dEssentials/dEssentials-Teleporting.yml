@@ -71,6 +71,7 @@ dessentials_command_warp:
       - queue clear
       }
     - if <context.args.size> != 1 {
+      # TODO: Warp list!
       - narrate "Warp list coming soon!"
       - queue clear
       }
