@@ -222,7 +222,7 @@ dessentials_command_butcher:
     - narrate "<&c>Invalid radius."
     - queue clear
   }
-  - define butcher <player.location.find.entities[<script.yaml_key[<def[type]>]>].within[<def[radius]>].filter[is_npc.not]>
+  - define butcher <player.location.find.entities[<script.yaml_key[<def[type]>]>].within[<def[radius]>].filter[is_npc.not].filter[is_player.not]>
   - narrate "<&2>Removing <&b><def[butcher].size><&2> entities within <&b><def[radius]><&2> blocks of type <&b><def[type]><&2>."
   - remove <def[butcher]>
 # dEssentials: Things a servers needs in one easy package!
@@ -378,7 +378,8 @@ dessentials_command_enchant:
     - adjust <def[item]> enchantments:<def[enchantments]> save:item
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
     - define enchantments <entry[item].result.enchantments.with_levels>
-    - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"# dEssentials: Things a servers needs in one easy package!
+    - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"
+# dEssentials: Things a servers needs in one easy package!
 # --- TELEPORTING: Commands related to teleportation.
 # See dEssentials-Core.yml for information
 
