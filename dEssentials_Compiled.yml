@@ -119,7 +119,7 @@ dessentials_command_time:
       - define hour <def[hour].sub[24]>
       }
     - narrate "<&2>Set time in <&b><def[world].name><&2> to <&b><def[world].time>ticks<&2> (<&b><def[hour]> o' clock<&2>)."
-    
+
 dessentials_command_day:
     type: command
     debug: false
@@ -128,7 +128,7 @@ dessentials_command_day:
     usage: /day
     permission: denizen.essentials.admin.time
     script:
-    ## TODO /day []world]
+    ## TODO /day [world]
     - if <context.server> {
       - narrate "<&c>This command is for players only."
       - queue clear
@@ -139,7 +139,7 @@ dessentials_command_day:
     }
     - adjust <player.world> time:0
     - narrate "Changed time to day in <player.world.name>"
-    
+
 dessentials_command_night:
     type: command
     name: night
@@ -189,7 +189,7 @@ dessentials_command_butcher:
   type: command
   name: butcher
   description: Butchers all mobs/animals within a radius. Radius defaults to 25 if empty.
-  usage: /butcher [{mobs}/animals/ambient] [radius] 
+  usage: /butcher [{mobs}/animals/ambient/list] [radius]
   permission: denizen.essentials.admin.butcher
   ## TODO type: all
   types: li@mobs|animals|ambient
@@ -201,33 +201,31 @@ dessentials_command_butcher:
     - narrate "<&c>This command is for players only."
     - queue clear
   }
-  - if <context.args.size> == 0 {
-    - define radius 25
-    - define type mobs
-  }
-  else if <context.args.size> == 1 {
+  - define type mobs
+  - define radius 25
+  - if <context.args.size> == 1 {
     - define type <context.args.get[1]||null>
-    - if !<script.yaml_key[types].contains[<def[type]>]> {
-      - narrate "<&c>Invalid type."
+    - if <def[type]> == list {
+      - narrate "<&2>Valid types are: <&b><script.yaml_key[types].as_list.formatted>"
       - queue clear
     }
-    - define radius 25
   }
   else if <context.args.size> == 2 {
     - define type <context.args.get[1]||null>
-    - if !<script.yaml_key[types].contains[<def[type]>]> {
-      - narrate "<&c>Invalid type."
-      - queue clear
-    }
     - define radius <context.args.get[2].as_int||null>
-    - if <def[radius]> == null {
-      - narrate "<&c>Invalid radius."
-      - queue clear
-    }
   }
-  - define butcher <player.location.find.entities[<script.yaml_key[<def[type]>]>].within[<def[radius]>]>
+  - if !<script.yaml_key[types].as_list.contains[<def[type]>]> {
+    - narrate "<&c>Invalid type."
+    - queue clear
+  }
+  - if <def[radius]> == null {
+    - narrate "<&c>Invalid radius."
+    - queue clear
+  }
+  - define butcher <player.location.find.entities[<script.yaml_key[<def[type]>]>].within[<def[radius]>].filter[is_npc.not]>
   - narrate "<&2>Removing <&b><def[butcher].size><&2> entities within <&b><def[radius]><&2> blocks of type <&b><def[type]><&2>."
-  - remove <def[butcher]># dEssentials: Things a servers needs in one easy package!
+  - remove <def[butcher]>
+# dEssentials: Things a servers needs in one easy package!
 # --- ITEMS: Commands related to the item system.
 # See dEssentials-Core.yml for information
 
@@ -303,7 +301,7 @@ dessentials_command_invsee:
       - narrate "<&c>/invsee <&lt>player<&gt>"
       - queue clear
     }
-    - define player <server.match_player[<context.args.get[1]>]||<server.match_offline_player[<context.args.get[1]>]||null>>
+    - define player <server.match_offline_player[<context.args.get[1]>]>
     - if <def[player]> == null {
       - narrate "<&c>No player found with name <&b><context.args.get[1]>"
       - queue clear
@@ -329,7 +327,7 @@ dessentials_command_endersee:
       - narrate "<&c>/endersee <&lt>player<&gt>"
       - queue clear
     }
-    - define player <server.match_player[<context.args.get[1]>]||<server.match_offline_player[<context.args.get[1]>]||null>>
+    - define player <server.match_offline_player[<context.args.get[1]>]>
     - if <def[player]> == null {
       - narrate "<&c>No player found with name <&b><context.args.get[1]>"
       - queue clear
@@ -341,7 +339,7 @@ dessentials_command_enchant:
     debug: false
     name: enchant
     description: Allows you to enchant the item in hand. Level is required.
-    usage: /enchant <&lt>enchantment,level|...<&gt>
+    usage: /enchant <&lt>enchantment,level|.../list<&gt>
     permission: denizen.essentials.admin.enchant
     script:
     - if <context.server> {
@@ -349,7 +347,7 @@ dessentials_command_enchant:
       - queue clear
     }
     - if <context.args.size> != 1 {
-      - narrate "<&c>/enchant <&lt>enchantment,level|...<&gt>"
+      - narrate "<&c>/enchant <&lt>enchantment,level|...<&gt>/list"
       - queue clear
     }
     - define valid li@ARROW_DAMAGE|ARROW_FIRE|ARROW_INFINITE|ARROW_KNOCKBACK|DAMAGE_ALL|DAMAGE_ANTHROPODSROPODS|DAMAGE_UNDEAD|DEPTH_STRIDER
@@ -380,24 +378,7 @@ dessentials_command_enchant:
     - adjust <def[item]> enchantments:<def[enchantments]> save:item
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
     - define enchantments <entry[item].result.enchantments.with_levels>
-    ## Change narrate command to display as Names, not ID's ##
-    #- narrate "<&2>Enchanted item with <&b><proc[dessentials_formatenchant_proc].context[<def[enchantments]>]><&2>."
-    - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"
-
-dessentials_formatenchant_proc:
-    type: procedure
-    definitions: list
-    script:
-    - define list "<def[list].parse[replace[,].with[: ]]>"
-    - define list "<def[list].parse[replace[ARROW_DAMAGE].with[Power]].replace[ARROW_FIRE].with[Flame].replace[ARROW_INFINITE].with[Infinity].replace[ARROW_KNOCKBACK].with[Punch]>"
-    - define list "<def[list].parse[replace[DAMAGE_ALL].with[Sharpness].replace[DAMAGE_ANTHROPODS].with[Bane of Anthropods].replace[DAMAGE_UNDEAD].with[Smite].replace[DEPTH_STRIDER].with[Depth_Strider]]>"
-    - define list "<def[list].parse[replace[DIG_SPEED].with[Efficiency].replace[DURABILITY].with[Unbreaking].replace[FIRE_ASPECT].with[Fire Aspect].replace[KNOCKBACK].with[Knockback]]>"
-    - define list "<def[list].parse[replace[LOOT_BONUS_BLOCK].with[Fortune].replace[LUCK].with[Luck of the Sea].replace[LURE].with[Lure].replace[OXYGEN].with[Respiration]]]>"
-    - define list "<def[list].parse[replace[PROTECTION_ENVIRONMENTAL].with[Protection].replace[PROTECTION_EXPLOSION].with[Blast Protection].replace[PROTECTION_FALL].with[Feather Fall]]>"
-    - define list "<def[list].parse[replace[PROTECTION_FIRE].with[Fire Protection].replace[PROTECTION_PROJECTILE].with[Projectile Protection].replace[SILK_TOUCH].with[Silk Touch]]>"
-    - define list "<def[list].parse[replace[THORNS].with[Thorns].replace[WATER_WORKER].with[Aqua Affinity]]>"
-    - define list "<def[list].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]>"
-    - determine <def[list]># dEssentials: Things a servers needs in one easy package!
+    - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"# dEssentials: Things a servers needs in one easy package!
 # --- TELEPORTING: Commands related to teleportation.
 # See dEssentials-Core.yml for information
 
