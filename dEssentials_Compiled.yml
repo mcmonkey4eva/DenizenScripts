@@ -426,7 +426,12 @@ dessentials_command_heal:
       - queue clear
     }
     - heal <def[player]>
-    - narrate "<&2>You healed <&b><t[<def[Player].is[==].to[<player>]>]:Yourself||<def[Player].name>><&a>."
+    - if <def[Player]> == <player> {
+      - narrate "<&2>You healed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You healed <&b><def[Player].name><&2>."
+    }
 
 dessentials_command_feed:
   type: command
@@ -449,7 +454,12 @@ dessentials_command_feed:
       - queue clear
     }
     - feed <def[player]>
-    - narrate "<&2>You fed <&b><t[<def[Player].is[==].to[<player>]>]:Yourself||<def[Player].name>><&a>."
+    - if <def[Player]> == <player> {
+      - narrate "<&2>You fed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You fed <&b><def[Player].name><&2>."
+    }
 # dEssentials: Things a servers needs in one easy package!
 # --- TELEPORTING: Commands related to teleportation.
 # See dEssentials-Core.yml for information
