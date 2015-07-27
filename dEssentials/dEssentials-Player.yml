@@ -1,0 +1,52 @@
+
+dessentials_command_heal:
+  type: command
+  debug: false
+  name: heal
+  description: Heals yourself or another player to full health.
+  usage: /heal [player]
+  permission: denizen.essentials.admin.heal
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> == 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+    }
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+    - heal <def[player]>
+    - if <def[Player]> == <player> {
+      - narrate "<&2>You healed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You healed <&b><def[Player].name><&2>."
+    }
+
+dessentials_command_feed:
+  type: command
+  debug: false
+  name: feed
+  description: Feed yourself or another player fully.
+  usage: /feed [player]
+  permission: denizen.essentials.admin.feed
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> == 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+    }
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+    - feed <def[player]>
+    - if <def[Player]> == <player> {
+      - narrate "<&2>You fed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You fed <&b><def[Player].name><&2>."
+    }

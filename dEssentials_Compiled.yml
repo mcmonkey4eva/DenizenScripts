@@ -176,7 +176,11 @@ dessentials_command_speed:
       - narrate "<&c>/speed <&lt>speed<&gt>"
       - queue clear
       }
-    - define speed <context.args.get[1].escaped.replace[&dot].with[.]>
+    - define speed <context.args.get[1].as_decimal||null>
+    - if <def[speed]> < 0 || <def[speed]> > 1 || <def[speed]> == null {
+      - narrate "<&c>Invalid speed. <&2>Valid speeds are between 0 and 1 inclusive."
+      - queue clear
+      }
     - if <player.is_flying> {
       - define type fly
       }
@@ -404,6 +408,58 @@ dessentials_command_enchant:
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
     - define enchantments <entry[item].result.enchantments.with_levels>
     - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"
+
+dessentials_command_heal:
+  type: command
+  debug: false
+  name: heal
+  description: Heals yourself or another player to full health.
+  usage: /heal [player]
+  permission: denizen.essentials.admin.heal
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> == 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+    }
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+    - heal <def[player]>
+    - if <def[Player]> == <player> {
+      - narrate "<&2>You healed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You healed <&b><def[Player].name><&2>."
+    }
+
+dessentials_command_feed:
+  type: command
+  debug: false
+  name: feed
+  description: Feed yourself or another player fully.
+  usage: /feed [player]
+  permission: denizen.essentials.admin.feed
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> == 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+    }
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+    - feed <def[player]>
+    - if <def[Player]> == <player> {
+      - narrate "<&2>You fed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You fed <&b><def[Player].name><&2>."
+    }
 # dEssentials: Things a servers needs in one easy package!
 # --- TELEPORTING: Commands related to teleportation.
 # See dEssentials-Core.yml for information
