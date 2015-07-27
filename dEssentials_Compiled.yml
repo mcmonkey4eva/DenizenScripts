@@ -412,8 +412,6 @@ dessentials_command_heal:
   description: Heals yourself or another player to full health.
   usage: /heal [player]
   permission: denizen.essentials.admin.heal
-  tab complete:
-    - determine <server.list_online_players.parse[name].filter[starts_with[<context.args.last>]]>
   script:
   ## TODO: partial amount
   ## TODO: multiple players at once.
@@ -440,8 +438,6 @@ dessentials_command_feed:
   description: Feed yourself or another player fully.
   usage: /feed [player]
   permission: denizen.essentials.admin.feed
-  tab complete:
-    - determine <server.list_online_players.parse[name].filter[starts_with[<context.args.last>]]>
   script:
   ## TODO: partial amount
   ## TODO: multiple players at once.
