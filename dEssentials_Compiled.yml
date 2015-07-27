@@ -404,6 +404,52 @@ dessentials_command_enchant:
     - inventory set o:<entry[item].result> d:<player.inventory> slot:<player.item_in_hand.slot>
     - define enchantments <entry[item].result.enchantments.with_levels>
     - narrate "<&2>Item is now enchanted with <&b><def[enchantments].parse[replace[,].with[: ]].formatted.replace[, and].with[<&2> + <&b>].replace[, ].with[<&2> + <&b>]><&2>"
+
+dessentials_command_heal:
+  type: command
+  debug: false
+  name: heal
+  description: Heals yourself or another player to full health.
+  usage: /heal [player]
+  permission: denizen.essentials.admin.heal
+  tab complete:
+    - determine <server.list_online_players.parse[name].filter[starts_with[<context.args.last>]]>
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> == 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+    }
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+    - heal <def[player]>
+    - narrate "<&2>You healed <&b><t[<def[Player].is[==].to[<player>]>]:Yourself||<def[Player].name>><&a>."
+
+dessentials_command_feed:
+  type: command
+  debug: false
+  name: feed
+  description: Feed yourself or another player fully.
+  usage: /feed [player]
+  permission: denizen.essentials.admin.feed
+  tab complete:
+    - determine <server.list_online_players.parse[name].filter[starts_with[<context.args.last>]]>
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> == 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+    }
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+    - feed <def[player]>
+    - narrate "<&2>You fed <&b><t[<def[Player].is[==].to[<player>]>]:Yourself||<def[Player].name>><&a>."
 # dEssentials: Things a servers needs in one easy package!
 # --- TELEPORTING: Commands related to teleportation.
 # See dEssentials-Core.yml for information
