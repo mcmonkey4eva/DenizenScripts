@@ -3,3 +3,5 @@ obj/
 bin/
 debug/
 *.user
+dEssentials_Compiled.yml
+dArrowTypes_Compiled.yml
