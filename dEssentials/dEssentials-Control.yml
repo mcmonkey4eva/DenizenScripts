@@ -141,6 +141,10 @@ dessentials_command_butcher:
     - narrate "<&c>This command is for players only."
     - queue clear
   }
+  - if <context.args.size> == 0 {
+    - narrate "<&c>/butcher [{mobs}/animals/ambient/list] [radius]"
+    - queue clear
+    }
   - define type mobs
   - define radius 25
   - if <context.args.size> == 1 {
