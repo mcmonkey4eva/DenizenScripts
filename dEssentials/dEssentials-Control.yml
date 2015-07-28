@@ -129,7 +129,7 @@ dessentials_command_butcher:
   type: command
   name: butcher
   description: Butchers all mobs/animals within a radius. Radius defaults to 25 if empty.
-  usage: /butcher [{mobs}/animals/ambient/list] [radius]
+  usage: /butcher [mobs/animals/ambient/list] [radius]
   permission: denizen.essentials.admin.butcher
   ## TODO type: all
   types: li@mobs|animals|ambient
@@ -142,7 +142,7 @@ dessentials_command_butcher:
     - queue clear
   }
   - if <context.args.size> == 0 {
-    - narrate "<&c>/butcher [{mobs}/animals/ambient/list] [radius]"
+    - narrate "<&c>/butcher [mobs/animals/ambient/list] [radius]"
     - queue clear
     }
   - define type mobs
