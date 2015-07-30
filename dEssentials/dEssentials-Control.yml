@@ -60,43 +60,6 @@ dessentials_command_time:
       }
     - narrate "<&2>Set time in <&b><def[world].name><&2> to <&b><def[world].time>ticks<&2> (<&b><def[hour]> o' clock<&2>)."
 
-dessentials_command_day:
-    type: command
-    debug: false
-    name: day
-    description: Changes the world time to day!
-    usage: /day
-    permission: denizen.essentials.admin.time
-    script:
-    ## TODO /day [world]
-    - if <context.server> {
-      - narrate "<&c>This command is for players only."
-      - queue clear
-    }
-    - if <context.args> > 0 {
-      - narrate "<&c>/day"
-      - queue clear
-    }
-    - adjust <player.world> time:0
-    - narrate "Changed time to day in <player.world.name>"
-
-dessentials_command_night:
-    type: command
-    name: night
-    permission: denizen.essentials.admin.time
-    script:
-    ## TODO /night [world]
-    - if <context.server> {
-      - narrate "<&c>This command is for players only."
-      - queue clear
-    }
-    - if <context.args> > 0 {
-      - narrate "<&c>/night"
-      - queue clear
-    }
-    - adjust <player.world> time:13500
-    - narrate "Changed time to night in <player.world.name>"
-
 dessentials_command_speed:
     type: command
     debug: false
