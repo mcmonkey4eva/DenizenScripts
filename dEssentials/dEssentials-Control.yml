@@ -94,6 +94,7 @@ dessentials_command_speed:
 
 dessentials_command_butcher:
   type: command
+  debug: false
   name: butcher
   description: Butchers all mobs/animals within a radius. Radius defaults to 25 if empty.
   usage: /butcher [{mobs}/animals/ambient/list] [radius]
