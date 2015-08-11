@@ -48,8 +48,8 @@ dessentials_command_time:
       else if <def[time].contains[<&co>]> {
       - adjust <def[world]> time:<def[time].before[<&co>].sub[6].mul[1000].add[<def[time].after[<&co>].mul[16.666]>]>
       }
-      else if <def[time].ends_with[ticks]> {
-      - adjust <def[world]> time:<def[time].before[ticks]>
+      else if <def[time].ends_with[ticks]> || <def[time].ends_with[t]> {
+      - adjust <def[world]> time:<def[time].before[t]>
       }
       else {
       - adjust <def[world]> time:<def[time].sub[6].mul[1000]>
