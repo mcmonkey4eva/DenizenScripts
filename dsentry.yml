@@ -223,7 +223,7 @@ dsentry_command_handler:
       - narrate "<&c>Guarding nothing."
       - queue clear
       }
-    - if <util.player_is_valid[<context.args.get[2].escaped>]> {
+    - if <sever.player_is_valid[<context.args.get[2].escaped>]> {
       - define player <player[<context.args.get[2].escaped>]||null>
       - if %player% == null {
         - narrate "<&c>Unknown player or npc."
@@ -232,7 +232,7 @@ dsentry_command_handler:
       - flag %mynpc% dsentry.follow_target:%player%
       - narrate "<&c>Guarding <&b><def[player].name><&c>!"
       }
-      else if <util.npc_is_valid[<context.args.get[2].escaped>]> {
+      else if <server.npc_is_valid[<context.args.get[2].escaped>]> {
       - define npc <npc[<context.args.get[2].escaped>]||null>
       - if %npc% == null {
         - narrate "<&c>Unknown player or npc."
@@ -631,7 +631,7 @@ dsentry_task_attack:
       - flag npc dsentry.target:<proc[dsentry_proc_picktarget]> 
       }
       else {
-      - if !<util.entity_is_spawned[<npc.flag[dsentry.target]>]||false> || !<npc.can_see[<npc.flag[dsentry.target]>]||false> {
+      - if !<server.entity_is_spawned[<npc.flag[dsentry.target]>]||false> || !<npc.can_see[<npc.flag[dsentry.target]>]||false> {
         - flag npc dsentry.target:<proc[dsentry_proc_picktarget]>
         }
       }
