@@ -223,7 +223,7 @@ dsentry_command_handler:
       - narrate "<&c>Guarding nothing."
       - queue clear
       }
-    - if <sever.player_is_valid[<context.args.get[2].escaped>]> {
+    - if <server.player_is_valid[<context.args.get[2].escaped>]> {
       - define player <player[<context.args.get[2].escaped>]||null>
       - if %player% == null {
         - narrate "<&c>Unknown player or npc."
