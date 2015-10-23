@@ -104,7 +104,7 @@ dsentry_world_handler:
           - if <def[value].location.world.name> != <context.damager.location.world.name> {
             - foreach next
             }
-          if <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
+          - if <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
             - flag <def[value]> dsentry.target:<context.damager>
             }
           }
@@ -119,7 +119,7 @@ dsentry_world_handler:
           - if <def[value].flag[dsentry.eventtargets].as_list||li@> !contains PvE {
             - foreach next
             }
-          -  if <def[value].location.world.name> != <context.damager.location.world.name> {
+          - if <def[value].location.world.name> != <context.damager.location.world.name> {
             - foreach next
             }
           - if <def[value].location.distance[<context.damager.location>]> < <def[value].flag[dsentry.range]> {
@@ -528,8 +528,7 @@ dsentry_command_handler:
       - narrate "<&6>There are no saves by that name."
       - queue clear
       }
-    - equip %mynpc% hand:<yaml[dsentry_saves].read[%base%hand]> head:<yaml[dsentry_saves].read[%base%helmet]> chest:<yaml[dsentry_saves].read[%base%chestplate]>
-      legs:<yaml[dsentry_saves].read[%base%leggings]> boots:<yaml[dsentry_saves].read[%base%boots]>
+    - equip %mynpc% hand:<yaml[dsentry_saves].read[%base%hand]> head:<yaml[dsentry_saves].read[%base%helmet]> chest:<yaml[dsentry_saves].read[%base%chestplate]> legs:<yaml[dsentry_saves].read[%base%leggings]> boots:<yaml[dsentry_saves].read[%base%boots]>
     - flag %mynpc% dsentry.follow_range:<yaml[dsentry_saves].read[%base%follow_range]>
     - flag %mynpc% dsentry.follow_target:<yaml[dsentry_saves].read[%base%follow_target]>
     - flag %mynpc% dsentry.range:<yaml[dsentry_saves].read[%base%range]>
@@ -697,7 +696,7 @@ dsentry_proc_calculatearmor:
     script:
     # flag npc armor '-1' to use calculated armor, otherwise, trust the flag value
     - if <npc.flag[dsentry.armor]> >= 0 {
-      -  determine <npc.flag[dsentry.armor]>
+      - determine <npc.flag[dsentry.armor]>
       }
     - define total 0
     - foreach helmet|chestplate|leggings|boots {
