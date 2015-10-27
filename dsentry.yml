@@ -524,7 +524,7 @@ dsentry_command_handler:
       - queue clear
       }
     - define base dsentry.<context.args.get[2]>.
-    - if !<yaml[dsentry_saves].read[%base%valid]||null> != true {
+    - if <yaml[dsentry_saves].read[%base%valid]||null> != true {
       - narrate "<&6>There are no saves by that name."
       - queue clear
       }
