@@ -125,7 +125,7 @@ dessentials_command_home:
           - queue clear
           }
         - flag player "dessentials.home:!" 
-        - narrate "<white>Home removed!"
+        - narrate "<&f>Home removed!"
         - wait 1        
         - flag player "dessentials.home:<player.location.simple>" 
         - narrate "<&2>Home added!" 
