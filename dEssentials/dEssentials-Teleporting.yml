@@ -87,3 +87,57 @@ dessentials_command_warp:
     # TODO: Delay option, price option
     - narrate "<&6>Teleporting..."
     - teleport <player> %existing%
+
+dessentials_command_home: 
+  type: command 
+  name: home 
+  usage: /home <&lt>argument<&gt> 
+  description: Save location as home or teleport home. 
+  permission: denizen.essentials.user.home 
+  allowed help: 
+  - determine <player.has_permission[denizen.essentials.user.home]||false> 
+  tab complete: 
+  - if <player.has_permission[denizen.essentials.user.home].not||true> queue clear 
+  - determine <li@reset|remove.filter[starts_with[<context.args.last||>]]> 
+  script: 
+    - if <context.server> {
+      - narrate "<&c>This command is for players only."
+      - queue clear
+      }
+    - if <player.has_permission[denizen.essentials.user.home].not||true> { 
+      - narrate "<&c>Sorry, you don't have permission to use this command." 
+      - queue clear 
+      } 
+    - if <context.args.is_empty> { 
+      - if <player.has_flag[dessentials.home].not> { 
+        - flag "dessentials.home:<player.location.simple>"  
+        - narrate "<&2>Home added!" 
+        } 
+        else { 
+        - teleport <player> <player.flag[dessentials.home]> 
+        } 
+        - queue clear 
+      } 
+    - choose <context.args.get[1]>: 
+      - case reset: 
+        - if <player.has_flag[dessentials.home].not> {
+          - narrate "<&c>No home found to reset!"
+          - queue clear
+          }
+        - flag player "dessentials.home:!" 
+        - narrate "<&f>Home removed!"
+        - wait 1        
+        - flag player "dessentials.home:<player.location.simple>" 
+        - narrate "<&2>Home added!" 
+
+      - case remove:
+        - if <player.has_flag[dessentials.home].not> {
+          - narrate "<&c>No home found to remove!"
+          - queue clear
+          } 
+        - flag player "dessentials.home:!" 
+        - narrate "<&f>Home removed!"
+         
+      - default: 
+        - narrate "<&c>Unknown Arguments!"
+

@@ -37,6 +37,7 @@
 # /setspawn  -> set the world spawn point            -> denizen.essentials.admin.setspawn
 # /warp      -> warp to a teleport point             -> denizen.essentials.user.warp
 # /setwarp   -> set a teleport point                 -> denizen.essentials.admin.setwarp
+# /home      -> set/reset/remove/teleport to home    -> denizen.essentials.user.home
 # ---------------------- Items       -------------------------------------------
 # /itemdb    -> shows information on an item         -> denizen.essentials.user.itemdb
 # /item      -> gives an item to the player          -> denizen.essentials.admin.item
