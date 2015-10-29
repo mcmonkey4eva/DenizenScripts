@@ -93,25 +93,25 @@ dessentials_command_home:
   name: home 
   usage: /home <&lt>argument<&gt> 
   description: Save location as home or teleport home. 
-  permission: denizen.essentials.home 
+  permission: denizen.essentials.user.home 
   allowed help: 
-  - determine <player.has_permission[denizen.essentials.home]||false> 
+  - determine <player.has_permission[denizen.essentials.user.home]||false> 
   tab complete: 
-  - if <player.has_permission[denizen.essentials.home].not||true> queue clear 
+  - if <player.has_permission[denizen.essentials.user.home].not||true> queue clear 
   - determine <li@reset|remove.filter[starts_with[<context.args.last||>]]> 
   script: 
     - if <context.server> {
       - narrate "<&c>This command is for players only."
       - queue clear
       }
-    - if <player.has_permission[denizen.essentials.home].not||true> { 
+    - if <player.has_permission[denizen.essentials.user.home].not||true> { 
       - narrate "<&c>Sorry, you don't have permission to use this command." 
       - queue clear 
       } 
     - if <context.args.is_empty> { 
       - if <player.has_flag[dessentials.home].not> { 
         - flag "dessentials.home:<player.location.simple>"  
-        - narrate "<&a>Home added!" 
+        - narrate "<&2>Home added!" 
         } 
         else { 
         - teleport <player> <player.flag[dessentials.home]> 
@@ -121,7 +121,7 @@ dessentials_command_home:
     - choose <context.args.get[1]>: 
       - case reset: 
         - if <player.has_flag[dessentials.home].not> {
-          - narrate "<red>No home found to reset!"
+          - narrate "<&c>No home found to reset!"
           - queue clear
           }
         - flag player "dessentials.home:!" 
@@ -140,3 +140,4 @@ dessentials_command_home:
          
       - default: 
         - narrate "<&c>Unknown Arguments!"
+
