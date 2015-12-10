@@ -1,0 +1,106 @@
+
+dessentials_command_heal:
+  type: command
+  debug: false
+  name: heal
+  description: Heals yourself or another player to full health.
+  usage: /heal [player]
+  permission: denizen.essentials.admin.heal
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> >= 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+      - if <def[player]> == null {
+        - narrate "<&c>Invalid player!"
+        - queue clear
+      }
+    }
+    - heal <def[player]>
+    - if <def[player]> == <player> {
+      - narrate "<&2>You healed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You healed <&b><def[Player].name><&2>."
+    }
+
+dessentials_command_feed:
+  type: command
+  debug: false
+  name: feed
+  description: Feed yourself or another player fully.
+  usage: /feed [player]
+  permission: denizen.essentials.admin.feed
+  script:
+  ## TODO: partial amount
+  ## TODO: multiple players at once.
+    - define player <player>
+    - if <context.args.size> >= 1 {
+      - define player <server.match_player[<context.args.get[1]>]||null>
+    }
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+    - feed <def[player]>
+    - if <def[player]> == <player> {
+      - narrate "<&2>You fed <&b>yourself<&2>."
+    }
+    else {
+      - narrate "<&2>You fed <&b><def[Player].name><&2>."
+    }
+
+dessentials_command_god:
+  type: command
+  debug: false
+  name: god
+  aliases:
+  - godmode
+  description: Toggles godmode on a user.
+  usage: /god [player]
+  permission: denizen.essentials.admin.feed
+  script:
+  - define player <player>
+  - if <context.args.size> >= 1 {
+    - define player <server.match_player[<context.args.get[1]>]||null>
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+  }
+  - adjust <def[player]> god_mode:<def[player].god_mode.not>
+  - define enabled <t[<def[player].god_mode>]:Enabled||Disabled>
+  - if <def[player]> == <player> {
+    - narrate "<&2>Godmode is now <def[enabled]>"
+  }
+  else {
+    - narrate "<&2>Godmode is now <def[enabled]> for player <def[player].name>"
+  }
+
+dessentials_command_fly:
+  type: command
+  debug: false
+  name: fly
+  aliases:
+  - flying
+  description: Toggles whether a player can fly.
+  usage: /fly [player]
+  permission: denizen.essentials.admin.fly
+  script:
+  - define player <player>
+  - if <contex.args.size> >= 1 {
+    - define player <server.match_player[<context.args.get[1]>]||null>
+    - if <def[player]> == null {
+      - narrate "<&c>Invalid player!"
+      - queue clear
+    }
+  }
+  - adjust <def[player]> can_fly:<def[player].can_fly.not>
+  - define enabled <t[<def[player].can_fly>]:enabled||disabled>
+  - if <def[player]> == <player> {
+    - narrate "<&2>Flying is now <def[enabled]>"
+  }
+  else {
+    - narrate "<&2>Flying is now <def[enabled]> for player <def[player].name>"
+  }

@@ -51,9 +51,9 @@ dessentials_command_setwarp:
       - narrate "<&c>Simple (alphanumeric) warp names only please."
       - queue clear
       }
-    - define existing <server.flag[dessentials.warps.<context.args.get[1]>]||null>
-    - if %existing% != null {
-      - narrate "<&c>Warning<&co> Override existing warp (at location<&co> <&b><def[existing].simple><&c>)"
+    - define existing <server.has_flag[<dessentials.warps.<context.args.get[1]>]>
+    - if <def[existing]> {
+      - narrate "<&c>Warning<&co> Overriding existing warp (at location<&co> <&b><def[existing].simple><&c>)"
       }
     - flag server dessentials.warps.<context.args.get[1]>:<player.location>
     - narrate "<&2>Set warp <&b><context.args.get[1]><&2> at <&b><player.location.simple><&2>!"
@@ -65,6 +65,8 @@ dessentials_command_warp:
     description: Warps to a given teleport point, or shows a list.
     usage: /warp [name]
     permission: denizen.essentials.user.warp
+    tab complete:
+    - determine <server.list_flags[dessentials.warps.].parse[after[dessentials.warps.].to_lowercase].filter[starts_with[<context.args.last||>]]>
     script:
     - if <context.server> {
       - narrate "<&c>This command is for players only. (Coming soon: /warp [name] [player])"
