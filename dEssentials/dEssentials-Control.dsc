@@ -1,0 +1,171 @@
+# dEssentials: Things a servers needs in one easy package!
+# --- CONTROL: Commands to control server information.
+# See dEssentials-Core.yml for information
+
+dessentials_command_time:
+    type: command
+    debug: false
+    name: time
+    description: Sets the world's time.
+    usage: /time <&lt>time<&gt> [world]
+    permission: denizen.essentials.admin.time
+    script:
+    - if <context.server> && <context.args.size> != 2 {
+      - narrate "<&c>This command is for players only."
+      - narrate "<&c>Available for the server<&co> /time <&lt>time<&gt> <&lt>world<&gt>"
+      - queue clear
+      }
+    - if <context.args.size> == 0 {
+      - narrate "<&c>/time <&lt>time<&gt> [world]"
+      - define hour <player.world.time.div[1000].add[6].round>
+      - if <def[hour]> >= 24 {
+        - define hour <def[hour].sub[24]>
+        }
+      - narrate "<&2>Time in <&b><player.world.name><&2> is <&b><player.world.time>ticks<&2> (<&b><def[hour]> o' clock<&2>)."
+      - queue clear
+      }
+    - define world <player.world>
+    - if <context.args.size> == 2 {
+      - define world w@<context.args.get[2]>
+      }
+    - if <def[world].name||null> == null {
+      - narrate "<&c>Unknown world."
+      - queue clear
+      }
+    - define time <context.args.get[1]>
+    - if <def[time].is[==].to[day]> {
+      - adjust <def[world]> time:0
+      }
+      else if <def[time].is[==].to[night]> {
+      - adjust <def[world]> time:15000
+      }
+      else if <def[time].is[==].to[dawn]> {
+      - adjust <def[world]> time:23000
+      }
+      else if <def[time].is[==].to[dusk]> {
+      - adjust <def[world]> time:13000
+      }
+      else if <def[time].contains[<&co>]> {
+      - adjust <def[world]> time:<def[time].before[<&co>].sub[6].mul[1000].add[<def[time].after[<&co>].mul[16.666]>]>
+      }
+      else if <def[time].ends_with[ticks]> {
+      - adjust <def[world]> time:<def[time].before[ticks]>
+      }
+      else {
+      - adjust <def[world]> time:<def[time].sub[6].mul[1000]>
+      }
+    - define hour <player.world.time.div[1000].add[6].round>
+    - if <def[hour]> >= 24 {
+      - define hour <def[hour].sub[24]>
+      }
+    - narrate "<&2>Set time in <&b><def[world].name><&2> to <&b><def[world].time>ticks<&2> (<&b><def[hour]> o' clock<&2>)."
+
+dessentials_command_day:
+    type: command
+    debug: false
+    name: day
+    description: Changes the world time to day!
+    usage: /day
+    permission: denizen.essentials.admin.time
+    script:
+    ## TODO /day [world]
+    - if <context.server> {
+      - narrate "<&c>This command is for players only."
+      - queue clear
+    }
+    - if <context.args> > 0 {
+      - narrate "<&c>/day"
+      - queue clear
+    }
+    - adjust <player.world> time:0
+    - narrate "Changed time to day in <player.world.name>"
+
+dessentials_command_night:
+    type: command
+    name: night
+    permission: denizen.essentials.admin.time
+    script:
+    ## TODO /night [world]
+    - if <context.server> {
+      - narrate "<&c>This command is for players only."
+      - queue clear
+    }
+    - if <context.args> > 0 {
+      - narrate "<&c>/night"
+      - queue clear
+    }
+    - adjust <player.world> time:13500
+    - narrate "Changed time to night in <player.world.name>"
+
+dessentials_command_speed:
+    type: command
+    debug: false
+    name: speed
+    description: Sets the player's speed.
+    usage: /speed <&lt>speed<&gt>
+    permission: denizen.essentials.admin.speed
+    script:
+    # TODO: / speed <speed> <player>
+    - if <context.server> {
+      - narrate "<&c>This command is for players only."
+      - queue clear
+      }
+    - if <context.args.size> == 0 {
+      - narrate "<&c>/speed <&lt>speed<&gt>"
+      - queue clear
+      }
+    - define speed <context.args.get[1].escaped.replace[&dot].with[.]>
+    - if <player.is_flying> {
+      - define type fly
+      }
+      else {
+      - define type walk
+      }
+    - adjust <player> <def[type]>_speed:<def[speed]>
+    # TODO: remove the %type% nonsense cheatery
+    - narrate "<&2>Player <&b><def[type]> <&2>speed set to <&b><player.%type%_speed><&2>."
+
+dessentials_command_butcher:
+  type: command
+  name: butcher
+  description: Butchers all mobs/animals within a radius. Radius defaults to 25 if empty.
+  usage: /butcher [mobs/animals/ambient/list] [radius]
+  permission: denizen.essentials.admin.butcher
+  ## TODO type: all
+  types: li@mobs|animals|ambient
+  mobs: li@spider|creeper|cave_spider|slime|zombie|skeleton|witch|silverfish|enderman
+  animals: li@bat|chicken|cow|pig|rabbit|sheep|squid|mushroom_cow
+  ambient: li@ocelot|wolf|iron_golem|horse|villager
+  script:
+  - if <context.server> {
+    - narrate "<&c>This command is for players only."
+    - queue clear
+  }
+  - if <context.args.size> == 0 {
+    - narrate "<&c>/butcher [mobs/animals/ambient/list] [radius]"
+    - queue clear
+    }
+  - define type mobs
+  - define radius 25
+  - if <context.args.size> == 1 {
+    - define type <context.args.get[1]||null>
+    - if <def[type]> == list {
+      - narrate "<&2>Valid types are: <&b><script.yaml_key[types].as_list.formatted>"
+      - queue clear
+    }
+  }
+  else if <context.args.size> == 2 {
+    - define type <context.args.get[1]||null>
+    - define radius <context.args.get[2].as_int||null>
+  }
+  - if !<script.yaml_key[types].as_list.contains[<def[type]>]> {
+    - narrate "<&c>Invalid type."
+    - queue clear
+  }
+  - if <def[radius]> == null {
+    - narrate "<&c>Invalid radius."
+    - queue clear
+  }
+  - define butcher <player.location.find.entities[<script.yaml_key[<def[type]>]>].within[<def[radius]>].filter[is_npc.not].filter[is_player.not]>
+  - narrate "<&2>Removing <&b><def[butcher].size><&2> entities within <&b><def[radius]><&2> blocks of type <&b><def[type]><&2>."
+  - remove <def[butcher]>

@@ -12,18 +12,18 @@ namespace dEssentialsCompiler
         {
             Console.WriteLine("mcmonkey's Denizen Script Compiler");
             string name = File.ReadAllText("compiler.txt").Replace("\r", "").Replace("\n", "");
-            string[] files = Directory.GetFiles(Environment.CurrentDirectory, "*.yml");
+            string[] files = Directory.GetFiles(Environment.CurrentDirectory, "*.dsc");
             StringBuilder complete = new StringBuilder();
             for (int i = 0; i < files.Length; i++)
             {
-                if (files[i].ToLower().EndsWith("core.yml"))
+                if (files[i].ToLower().EndsWith("core.dsc"))
                 {
                     complete.Append(File.ReadAllText(files[i]));
                 }
             }
             for (int i = 0; i < files.Length; i++)
             {
-                if (!files[i].ToLower().EndsWith("core.yml"))
+                if (!files[i].ToLower().EndsWith("core.dsc"))
                 {
                     complete.Append(File.ReadAllText(files[i]));
                 }
