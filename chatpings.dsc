@@ -23,13 +23,8 @@ chat_ping_world:
     debug: false
     events:
         on player chats:
-        - foreach <server.list_online_players> {
-          - if <context.message.contains[<def[value].name>]> || <context.message.contains[<def[value].name.display.strip_color>]> {
-            - announce to_console "<&6>Denizen<&co> <&7><player.name> mentions <%value%.name>"
-            - narrate targets:%value% "<player.name><&b> mentioned you!"
-            - playsound <def[value].location> sound:successful_hit
-            }
-          }
-
-
-
+        - foreach <server.online_players>:
+          - if <context.message.contains[<[value].name>]> || <context.message.contains[<[value].name.display.strip_color>]>:
+            - announce to_console "<&6>Denizen<&co> <&7><player.name> mentions <[value].name>"
+            - narrate targets:<[value]> "<player.name><&b> mentioned you!"
+            - playsound <[value].location> sound:successful_hit

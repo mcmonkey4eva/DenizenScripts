@@ -10,14 +10,12 @@ dessentials_command_celebrate:
     usage: /celebrate
     permission: denizen.essentials.user.celebrate
     script:
-    - if <context.server> {
+    - if <context.server>:
       - narrate "<&c>This command is for players only."
-      - queue clear
-      }
+      - stop
     - repeat 15:
       - define x <util.random.decimal[-10].to[10]>
       - define z <util.random.decimal[-10].to[10]>
-      - firework <player.location.add[<def[x]>,0,<def[z]>]> power:1 primary:co@random|co@random fade:co@random|co@random random flicker trail
-      - if <def[value].mod[5]> == 1 {
+      - firework <player.location.add[<[x]>,0,<[z]>]> power:1 primary:crandom|random fade:crandom|random random flicker trail
+      - if <[value].mod[5]> == 1:
         - wait 1
-        }

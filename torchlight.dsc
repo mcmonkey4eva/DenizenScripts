@@ -21,12 +21,10 @@ torch_light_world:
     debug: false
     events:
         on player steps on block:
-        - if <player.has_flag[torch_light_prev]> {
+        - if <player.has_flag[torch_light_prev]>:
           - showfake m@air <context.previous_location> duration:1t
           - flag player torch_light_prev:!
-          }
-        - if <player.item_in_hand.material.name> == torch && !<context.location.add[0,1,0].material.is_solid> {
+        - if <player.item_in_hand.material.name> == torch && !<context.location.add[0,1,0].material.is_solid>:
           - showfake m@torch <context.location.add[0,1,0]> duration:1d
           - flag player torch_light_prev
-          }
 

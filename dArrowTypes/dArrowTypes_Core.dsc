@@ -29,65 +29,53 @@ darrowtypes_core_world:
     type: world
     events:
         on player shoots bow:
-        - define strength <context.bow.script.yaml_key[dat_settings.strength]||1>
-        - define bombs <context.bow.script.yaml_key[dat_settings.bombs]||false>
-        - define arrow <proc[darrowtypes_determine_item_procedure].context[<context.entity.inventory>|<def[strength]>|<def[bombs]>]>
+        - define strength <context.bow.script.data_key[dat_settings.strength]||1>
+        - define bombs <context.bow.script.data_key[dat_settings.bombs]||false>
+        - define arrow <proc[darrowtypes_determine_item_procedure].context[<context.entity.inventory>|<[strength]>|<[bombs]>]>
         # TODO: If in creative, assume a standard arrow
-        - if <def[arrow]> == null {
+        - if <[arrow]> == null:
           - determine passively cancelled
-          - if <context.entity.is_player> {
+          - if <context.entity.is_player>:
             - narrate "<&c>Your bow can't hold the weight of any of your arrows!" targets:<context.entity>
             - wait 1t
-            - inventory update d:<context.entity.inventory>
-            }
-          - queue clear
-          }
+            - inventory update d:<context.entity.inventory> stop
         - define critical <context.projectile.critical>
-        - define arrow_weight <def[arrow].script.yaml_key[dat_settings.weight]||1>
-        - define new_force <context.force.mul[<def[strength]>].div[<def[arrow_weight]>]>
-        - if <def[new_force]> > 9.0 {
+        - define arrow_weight <[arrow].script.data_key[dat_settings.weight]||1>
+        - define new_force <context.force.mul[<[strength]>].div[<[arrow_weight]>]>
+        - if <[new_force]> > 9.0:
           - define new_force 9.0
-          }
-        - shoot arrow[critical=<def[critical]>] origin:<context.entity> speed:<def[new_force]> shooter:<context.entity> save:myarrow
-        - if <def[arrow].script.yaml_key[dat_settings.impact_script_task]||null> != null {
+        - shoot arrow[critical=<[critical]>] origin:<context.entity> speed:<[new_force]> shooter:<context.entity> save:myarrow
+        - if <[arrow].script.data_key[dat_settings.impact_script_task]||null> != null:
           - flag <entry[myarrow].shot_entities.get[1]> dat
-          - flag <entry[myarrow].shot_entities.get[1]> impact_script:<def[arrow].script.yaml_key[dat_settings.impact_script_task]||null>
-          - flag <entry[myarrow].shot_entities.get[1]> impact_script_defs:<def[arrow].script.yaml_key[dat_settings.impact_script_defs]||li@>
-          }
-          else {
-          - announce "<def[arrow].script> -> <def[arrow].list_keys[dat_settings]>"
-          }
+          - flag <entry[myarrow].shot_entities.get[1]> impact_script:<[arrow].script.data_key[dat_settings.impact_script_task]||null>
+          - flag <entry[myarrow].shot_entities.get[1]> impact_script_defs:<[arrow].script.data_key[dat_settings.impact_script_defs]||li@>
+        - else:
+          - announce "<[arrow].script> -<&gt> <[arrow].list_keys[dat_settings]>"
         # TODO: Don't take arrow if in creative
-        - take <def[arrow]> quantity:1 from:<context.entity.inventory>
+        - take <[arrow]> quantity:1 from:<context.entity.inventory>
         - define new_dura <context.bow.durability.add[1]>
         - define slot <context.entity.inventory.find[<context.bow>]>
         # TODO: Don't take bow if in creative
         - take <context.bow> from:<context.entity.inventory> qty:1
-        - if <def[new_dura]> < <context.bow.material.max_durability> {
-          - adjust <context.bow> durability:<def[new_dura]> save:new_bow
-          - give <entry[new_bow].result> qty:1 to:<context.entity.inventory> slot:<def[slot]>
-          }
+        - if <[new_dura]> < <context.bow.material.max_durability>:
+          - adjust <context.bow> durability:<[new_dura]> save:new_bow
+          - give <entry[new_bow].result> qty:1 to:<context.entity.inventory> slot:<[slot]>
         - determine cancelled
         on projectile hits block:
-        - if !<context.projectile.has_flag[dat]> {
-          - queue clear
-          }
-        - if <context.projectile.has_flag[impact_script]> {
+        - if !<context.projectile.has_flag[dat]>:
+          - stop
+        - if <context.projectile.has_flag[impact_script]>:
           - define defs li@<context.projectile>|<context.projectile.location>
-          - run s@<context.projectile.flag[impact_script]> def:<def[defs].include[<context.projectile.flag[impact_script_defs]>]>
-          }
+          - run s@<context.projectile.flag[impact_script]> def:<[defs].include[<context.projectile.flag[impact_script_defs]>]>
 
 darrowtypes_determine_item_procedure:
     type: procedure
     definitions: inventory|strength|bombs
     script:
     # TODO: Quiver
-    - foreach <def[inventory].list_contents> {
-      - if <def[value].material.name> == arrow && <def[value].script.yaml_key[dat_settings.weight]||1> <= <def[strength]> {
-        - if <def[bombs]> || !<def[value].script.yaml_key[dat_settings.is_bomb]||false> {
-          - determine <def[value]>
-          }
-        }
-      }
+    - foreach <[inventory].list_contents>:
+      - if <[value].material.name> == arrow && <[value].script.data_key[dat_settings.weight]||1> <= <[strength]>:
+        - if <[bombs]> || !<[value].script.data_key[dat_settings.is_bomb]||false>:
+          - determine <[value]>
     - determine null
 

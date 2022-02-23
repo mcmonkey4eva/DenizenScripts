@@ -30,15 +30,13 @@ sim_handler_command:
     - determine <player.has_permission[denizen.sampleinvmenu]||false>
     script:
     # No servers
-    - if <context.server> {
+    - if <context.server>:
       - narrate "<&c>This is a player-only command."
-      - queue clear
-      }
+      - stop
     # Need permission
-    - if !<player.has_permission[denizen.sampleinvmenu]||false> {
+    - if !<player.has_permission[denizen.sampleinvmenu]||false>:
       - narrate "<&c>You lack the permission for this command."
-      - queue clear
-      }
+      - stop
     # Show the inventory to the linked player
     - inventory open d:in@sim_inventory
 
@@ -48,10 +46,9 @@ sim_handler_world:
     events:
         on player clicks sim_god_item in inventory:
         # Confirm permission node
-        - if !<player.has_permission[denizen.sampleinvmenu.god]||false> {
+        - if !<player.has_permission[denizen.sampleinvmenu.god]||false>:
           - narrate "<&c>You lack the permission for this menu item."
-          - queue clear
-          }
+          - stop
         - narrate "<&2>At this point, you'd receive god!"
         # Prevent the click
         - determine cancelled

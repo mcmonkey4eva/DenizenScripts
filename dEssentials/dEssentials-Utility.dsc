@@ -8,11 +8,9 @@ dessentials_utility_events:
     events:
         ## Sign Colors ##
         on player changes sign:
-        - if <player.has_permission[denizen.essentials.utility.signcolor]||<player.is_op>> {
+        - if <player.has_permission[denizen.essentials.utility.signcolor]||<player.is_op>>:
           - determine <context.new.replace[regex:&([0-9a-fA-Fk-oK-OrR])].with[<red.substring[1,1]>$1]>
-          }
         ## Chat Colors ##
         on player chats:
-        - if <player.has_permission[denizen.essentials.utility.chatcolor]||<player.is_op>> {
+        - if <player.has_permission[denizen.essentials.utility.chatcolor]||<player.is_op>>:
           - determine <context.message.replace[regex:&([0-9a-fA-Fk-oK-OrR])].with[<red.substring[1,1]>$1]>
-          }

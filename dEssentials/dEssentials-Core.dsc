@@ -57,6 +57,5 @@
 # ------------------------------------------------------------------------------
 
 dessentials_core_placeholder:
-    type: yaml data
-    description: This is here so the YAML file doesn't show an error for being empty.
-                 This file will eventually be used for 'core' commands, if any are chosen.
+    type: data
+    description: This is here so the YAML file doesn't show an error for being empty. This file will eventually be used for 'core' commands, if any are chosen.

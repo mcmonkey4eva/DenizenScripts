@@ -12,7 +12,7 @@
 # ---------------------------- END HEADER ----------------------------
 
 chestlocker_settings:
-    type: yaml data
+    type: data
     chests:
     - chest
     - trapped_chest
@@ -39,7 +39,7 @@ chestlocker_settings:
     - birch_door
     - acacia_door
     - dark_oak_door
-    - small_doors:
+    small_doors:
     - trap_door
     - fence_gate
     - birch_fence_gate
@@ -50,102 +50,85 @@ chestlocker_settings:
 
 chestlocker_is_lockable_procedure:
     type: procedure
-    definition: material
+    definitions: material
     script:
-    - define mats <s@chestlocker_settings.yaml_key[chests]>
-    - define mats <def[mats].include[<s@chestlocker_settings.yaml_key[no_output]>]>
-    - define mats <def[mats].include[<s@chestlocker_settings.yaml_key[blocks]>]>
-    - define mats <def[mats].include[<s@chestlocker_settings.yaml_key[doors]>]>
-    - define mats <def[mats].include[<s@chestlocker_settings.yaml_key[small_doors]>]>
-    - if %mats% contains %material% {
+    - define mats <script[chestlocker_settings].data_key[chests]>
+    - define mats <[mats].include[<script[chestlocker_settings].data_key[no_output]>]>
+    - define mats <[mats].include[<script[chestlocker_settings].data_key[blocks]>]>
+    - define mats <[mats].include[<script[chestlocker_settings].data_key[doors]>]>
+    - define mats <[mats].include[<script[chestlocker_settings].data_key[small_doors]>]>
+    - if <[mats]> contains <[material]>:
       - determine true
-      }
-      else {
+    - else:
       - determine false
-      }
 
 chestlocker_check_canonical_procedure:
     type: procedure
     definitions: location
     script:
     # North/West/South/East
-    - define directions li@1,0,0|-1,0,0|0,0,1|0,0,-1
+    - define directions 1,0,0|-1,0,0|0,0,1|0,0,-1
     - inject locally check_direction
     # NorthNorth/WestWest/SouthSouth/EastEast
-    - define directions li@2,0,0|-2,0,0|0,0,2|0,0,-2
+    - define directions 2,0,0|-2,0,0|0,0,2|0,0,-2
     - inject locally check_direction
     # TODO
     - determine null
     check_direction:
-    - foreach %directions% {
-      - if <proc[chestlocker_is_lockable_procedure].context[<def[location].add[%value%].material.bukkit_enum>]> {
-        - determine <def[location].add[%value%]>
-        }
-      }
+    - foreach <[directions]>:
+      - if <proc[chestlocker_is_lockable_procedure].context[<[location].add[<[value]>].material.bukkit_enum>]>:
+        - determine <[location].add[<[value]>]>
 
 chestlocker_check_locksign_procedure:
     type: procedure
-    definition: sign
+    definitions: sign
     script:
-    - if <def[sign].sign_contents.get[1].strip_color> == [lock] {
+    - if <[sign].sign_contents.get[1].strip_color> == [lock]:
       - determine true
-      }
-      else if <def[sign].sign_contents.get[1].strip_color> == [private] {
+    - else if <[sign].sign_contents.get[1].strip_color> == [private]:
       - determine true
-      }
-      else {
+    - else:
       - determine false
-      }
 
 chestlocker_check_lockmoresign_procedure:
     type: procedure
-    definition: sign
+    definitions: sign
     script:
-    - if <def[sign].sign_contents.get[1].strip_color> == "[more users]" {
+    - if <[sign].sign_contents.get[1].strip_color> == "[more users]":
       - determine true
-      }
-      else {
+    - else:
       - determine false
-      }
 
 
 chestlocker_check_allowed_line_procedure:
     type: procedure
     definitions: line
     script:
-    - if <player.name.substring[1,15].is[==].to[%line%]> {
+    - if <player.name.substring[1,15].is[==].to[<[line]>]>:
       - determine true
-      }
-    - if <def[line].is[==].to[<&lb>everyone<&rb>]> {
+    - if <[line].is[==].to[<&lb>everyone<&rb>]>:
       - determine true
-      }
-    - if <def[line].starts_with[g<&co>]> && <def[line].length> > 2 {
-      - if <player.in_group[<def[line].substring[3]>]> {
+    - if <[line].starts_with[g<&co>]> && <[line].length> > 2:
+      - if <player.in_group[<[line].substring[3]>]>:
         - determine true
-        }
-      }
     - determine false
 
 chestlocker_check_allowed_sign_procedure:
     type: procedure
     definitions: sign
     script:
-    - foreach li@2|3|4 {
-      - if <proc[chestlocker_check_allowed_line_procedure].context[<def[sign].sign_contents.get[%value%]>]> {
+    - foreach li@2|3|4:
+      - if <proc[chestlocker_check_allowed_line_procedure].context[<[sign].sign_contents.get[<[value]>]>]>:
         - determine true
-        }
-      }
     - determine false
 
 chestlocker_check_allowed_hopper_procedure:
     type: procedure
     definitions: sign
     script:
-    - foreach li@2|3|4 {
-      - if <def[sign].sign_contents.get[%value%].starts_with[<&lb>hopper]> {
+    - foreach 2|3|4:
+      - if <[sign].sign_contents.get[<[value]>].starts_with[<&lb>hopper]>:
         - determine true
-        }
-      }
     - determine false
 
 # TODO:

@@ -24,7 +24,7 @@ chat_alert_world:
     debug: false
     events:
         on player chats:
-        - playsound <server.list_online_players.exclude[<server.get_online_players_flagged[chatalert_optout]>]> sound:NOTE_STICKS
+        - playsound <server.online_players.exclude[<server.online_players_flagged[chatalert_optout]>]> sound:NOTE_STICKS
 
 chat_alert_command:
     type: command
@@ -35,15 +35,9 @@ chat_alert_command:
     description: Sets whether you get chat alert noises.
     usage: /chatalert
     script:
-    - if <player.flag[chatalert_optout]||false> {
+    - if <player.flag[chatalert_optout]||false>:
       - flag player chatalert_optout:!
       - narrate "<&b>Now receiving chat alert noises."
-      }
-      else {
+    - else:
       - flag player chatalert_optout:true
       - narrate "<&c>No longer receiving chat alert noises."
-      }
-
-
-
-

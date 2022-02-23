@@ -4,7 +4,7 @@ darrowtypes_explosion_task:
     type: task
     definitions: projectile|location|power
     script:
-    - explode power:<def[power]> <def[location]>
+    - explode power:<[power]> <[location]>
 
 darrowtypes_small_bomb_arrow:
     type: item
